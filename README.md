@@ -2,10 +2,12 @@
 
 Preliminary idea, subject to change:
 
-**AI-Enabled Enterprise Document Summarizer**
+**Backend API Generator for Database - Low Code**
 
-**Objective:** Create an AI platform that automatically summarizes lengthy enterprise documents (such as meeting notes, reports, and contracts) into concise, actionable insights using NLP techniques. This solution will help stakeholders quickly grasp key information without sifting through extensive documents.
+Objective: User specifies the database (DB) and code framework, and the application generates CRUD (Create, Read, Update, Delete) APIs as well as custom APIs based on project needs, handling the DB data seamlessly.
 
-**Novelty:** Integrate the summarizer with enterprise chatbots, allowing employees to query the system for real-time, contextual document summaries and quick answers. This integration enhances user engagement by providing personalized, immediate responses within familiar communication channels.
+Novelty: The platform provides a low-code interface where users can visually configure database connections, define data models, and customize API endpoints without writing code. Implement AI-driven recommendations for API optimizations based on the structure and use cases of the database.
 
-**Enterprise Use:** Improves efficiency in handling large volumes of information in daily operations. By streamlining information access, it enables employees to focus on critical tasks and make informed decisions more swiftly.
+Enterprise use: Enables rapid development and deployment of database-driven applications, reduces the need for extensive backend development expertise, 
+
+- accelerates time-to-market for enterprise solutions by simplifying the creation and management of APIs.
