@@ -11,6 +11,8 @@ Enterprise use: Enables rapid development and deployment of database-driven appl
 - accelerates time-to-market for enterprise solutions by simplifying the creation and management of APIs.
 
 # Architecture
+![architecture](https://github.com/user-attachments/assets/2793e72a-2e4d-479d-ba5b-043999c5068b)
+
 
 # Use Case Personas
 
