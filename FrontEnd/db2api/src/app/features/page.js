@@ -1,7 +1,19 @@
 import { BoltIcon, ShieldCheckIcon, CloudIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+
 export default function Features() {
   return (
     <div className="min-h-screen bg-white">
+      {/* Go Back Button */}
+      <div className="p-4">
+        <Link href="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold">
+          <svg className="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Go Back
+        </Link>
+      </div>
+
       <div className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Heading */}
