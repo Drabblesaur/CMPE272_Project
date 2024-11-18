@@ -17,7 +17,7 @@ const aiController = (fastify, options, done) => {
     
     fastify.get('/', { schema: responseSchema }, (req, reply) => {
         return {
-            message: 'openAI api'
+            message: process.env.OPENAI_API_KEY
         };
     });
 
