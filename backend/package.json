@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@fastify/oauth2": "^8.1.0",
+    "backend": "file:",
     "dotenv": "^16.4.5",
     "fastify": "^5.1.0",
     "nodemon": "^3.1.7",
