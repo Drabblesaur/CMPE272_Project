@@ -37,13 +37,14 @@ app.register(oauth2, {
 // Endpoint to handle GitHub OAuth callback
 app.get('/auth/callback', async (req, reply) => {
     const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
-
+    console.log(token)
     if (token) {
-        return reply.send({
-            success: true,
-            token,
-            message: 'GitHub authentication successful!'
-        });
+        // return reply.send({
+        //     success: true,
+        //     token,
+        //     message: 'GitHub authentication successful!'
+        // });
+        reply.redirect('http://localhost:3000/home');
     } else {
         return reply.status(400).send({
             success: false,

@@ -12,10 +12,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@fastify/cors": "^10.0.1",
     "@fastify/oauth2": "^8.1.0",
     "backend": "file:",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "fastify": "^5.1.0",
+    "fastify-cors": "^6.0.3",
     "mongoose": "^8.8.2",
     "nodemon": "^3.1.7",
     "openai": "^4.72.0"
