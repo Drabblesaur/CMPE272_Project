@@ -1,11 +1,24 @@
 import fastify from "fastify";
 //import cors from "@fastify/cors";
 import aiController from './ai-controller.js';
-import dotenv from 'dotenv'; // Import dotenv
+import dotenv from 'dotenv'; 
 import oauth2 from '@fastify/oauth2';
+import dbController from "./dbController.js";
+import mongoose from 'mongoose';
+
 dotenv.config();
 
 const app = fastify({ logger: true }); // Creating a Fastify instance
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, { // Ensure you have MONGODB_URI in your .env file
+})
+.then(() => {
+    console.log('MongoDB connected successfully');
+})
+.catch(err => {
+    console.error('MongoDB connection error:', err);
+});
 
 // Register GitHub OAuth plugin
 app.register(oauth2, {
@@ -41,6 +54,8 @@ app.get('/auth/callback', async (req, reply) => {
 
 // register ai controller
 app.register(aiController,{prefix: '/ai'});
+app.register(dbController,{prefix: '/db'});
+
 
 const start = async () => {
     try {
