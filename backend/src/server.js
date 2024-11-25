@@ -1,11 +1,24 @@
 import fastify from "fastify";
 //import cors from "@fastify/cors";
 import aiController from './ai-controller.js';
-import dotenv from 'dotenv'; // Import dotenv
+import dotenv from 'dotenv'; 
 import oauth2 from '@fastify/oauth2';
+import dbController from "./dbController.js";
+import mongoose from 'mongoose';
+
 dotenv.config();
 
 const app = fastify({ logger: true }); // Creating a Fastify instance
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, { // Ensure you have MONGODB_URI in your .env file
+})
+.then(() => {
+    console.log('MongoDB connected successfully');
+})
+.catch(err => {
+    console.error('MongoDB connection error:', err);
+});
 
 // Register GitHub OAuth plugin
 app.register(oauth2, {
@@ -24,13 +37,14 @@ app.register(oauth2, {
 // Endpoint to handle GitHub OAuth callback
 app.get('/auth/callback', async (req, reply) => {
     const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
-
+    console.log(token)
     if (token) {
-        return reply.send({
-            success: true,
-            token,
-            message: 'GitHub authentication successful!'
-        });
+        // return reply.send({
+        //     success: true,
+        //     token,
+        //     message: 'GitHub authentication successful!'
+        // });
+        reply.redirect('http://localhost:3000/home');
     } else {
         return reply.status(400).send({
             success: false,
@@ -41,6 +55,8 @@ app.get('/auth/callback', async (req, reply) => {
 
 // register ai controller
 app.register(aiController,{prefix: '/ai'});
+app.register(dbController,{prefix: '/db'});
+
 
 const start = async () => {
     try {

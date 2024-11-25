@@ -12,12 +12,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -98,8 +101,15 @@ export function LoginForm() {
           >
             {isLoading ? "Logging in..." : "Login"}
           </Button>
-          <Button variant="outline" className="w-full">
-            Login with Google
+          <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                window.location.href = "http://localhost:8080/auth/login";
+                // router.push("/home");
+              }}
+            >
+            Login with Github
           </Button>
         </div>
         <div className="mt-4 text-center text-sm">
