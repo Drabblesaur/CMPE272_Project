@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button"; // Assuming you have this component
 import Link from "next/link";
 
-
 export function SignupForm() {
   const [formData, setFormData] = useState({
     name: "",
