@@ -26,6 +26,7 @@ import { UserProfileMenu } from "@/components/UserProfileMenu";
 import { UserProjects } from "@/components/UserProjects";
 import { Header } from "./Header";
 import { NewProjectDialog } from "./NewProjectDialog";
+import DataSetBuilder from "./apigen";
 import Link from "next/link";
 
 const data = {
@@ -121,8 +122,8 @@ export default function Dashboard() {
 
       <SidebarInset>
         <Header selectedProject={selectedProject} />
-        {/* Main content goes here*/}
-
+        {/* Show DataSetBuilder when a project is selected*/}
+        {selectedProject ? <DataSetBuilder /> : null}
         <NewProjectDialog />
       </SidebarInset>
     </SidebarProvider>
