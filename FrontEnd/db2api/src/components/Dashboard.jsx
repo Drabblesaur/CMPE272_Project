@@ -28,12 +28,27 @@ import { Header } from "./Header";
 import { NewProjectDialog } from "./NewProjectDialog";
 import DataSetBuilder from "./apigen";
 import MarkdownDisplay from "./MarkdownDisplay";
+import ErrorAlert from "./alert";
 import Link from "next/link";
+
+const EmptyData = {
+  data: [
+    {
+      user: {
+        id: 0,
+        name: "User",
+        email: "email.com",
+      },
+      userProjects: [],
+    },
+  ],
+};
 
 export default function Dashboard() {
   const [selectedProject, setSelectedProject] = React.useState(null);
   const [userData, setUserData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
 
   // API call to get user data
   const getUserData = () => {
@@ -48,7 +63,16 @@ export default function Dashboard() {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+        // Load Empty data
+        setUserData(EmptyData);
         setLoading(false);
+        // Show an error alert
+        setError(
+          <ErrorAlert
+            title="Error fetching data"
+            description="check console for issue"
+          />
+        );
       });
   };
 
@@ -113,6 +137,7 @@ export default function Dashboard() {
         {selectedProject ? (
           <MarkdownDisplay content={selectedProject.code} />
         ) : null}
+        {error}
         <NewProjectDialog />
       </SidebarInset>
     </SidebarProvider>
