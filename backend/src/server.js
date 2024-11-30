@@ -1,5 +1,5 @@
 import fastify from "fastify";
-//import cors from "@fastify/cors";
+import cors from "@fastify/cors";
 import aiController from "./ai-controller.js";
 import dotenv from "dotenv";
 import oauth2 from "@fastify/oauth2";
@@ -23,6 +23,11 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
+ // Register CORS
+ app.register(cors, {
+    origin: '*', // Allow all origins
+  });
+  
 // Register GitHub OAuth plugin
 app.register(oauth2, {
   name: "githubOAuth",
