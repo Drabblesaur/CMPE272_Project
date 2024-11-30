@@ -63,7 +63,7 @@ export default function Dashboard() {
       console.error("Error fetching data:", error);
       setUserData(EmptyData);
       setLoading(false);
-      setError(<ErrorAlert message="Error fetching data" />);
+      setError(<ErrorAlert description="Error fetching data" />);
     }
   };
 
