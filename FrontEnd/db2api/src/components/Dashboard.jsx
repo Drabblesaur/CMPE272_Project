@@ -26,6 +26,7 @@ import { UserProfileMenu } from "@/components/UserProfileMenu";
 import { UserProjects } from "@/components/UserProjects";
 import { Header } from "./Header";
 import { NewProjectDialog } from "./NewProjectDialog";
+import ProjectContainer from "./ProjectContainer";
 import DataSetBuilder from "./apigen";
 import MarkdownDisplay from "./MarkdownDisplay";
 import ErrorAlert from "./alert";
@@ -124,10 +125,10 @@ export default function Dashboard() {
       <SidebarInset>
         <Header selectedProject={selectedProject} />
         {/* Show DataSetBuilder when a project is selected*/}
-        {selectedProject ? <DataSetBuilder project={selectedProject} /> : null}
         {selectedProject ? (
-          <MarkdownDisplay content={selectedProject.code} />
+          <ProjectContainer project={selectedProject} />
         ) : null}
+
         {error}
         <NewProjectDialog />
       </SidebarInset>
