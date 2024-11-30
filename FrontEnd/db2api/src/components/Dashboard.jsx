@@ -28,28 +28,43 @@ import { Header } from "./Header";
 import { NewProjectDialog } from "./NewProjectDialog";
 import DataSetBuilder from "./apigen";
 import MarkdownDisplay from "./MarkdownDisplay";
+import ErrorAlert from "./alert";
 import Link from "next/link";
+
+const EmptyData = {
+  data: [
+    {
+      user: {
+        id: 0,
+        name: "User",
+        email: "email.com",
+      },
+      userProjects: [],
+    },
+  ],
+};
 
 export default function Dashboard() {
   const [selectedProject, setSelectedProject] = React.useState(null);
-  const [userData, setUserData] = React.useState(null);
+  const [userData, setUserData] = React.useState(EmptyData);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
 
   // API call to get user data
-  const getUserData = () => {
-    fetch("http://127.0.0.1:8080/db/userData/2")
-      .then((response) => response.json())
-      .then((data) => {
-        // Access the data property safely
-        console.log(data);
-        setUserData(data);
-        setLoading(false);
-        return data;
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      });
+  const getUserData = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8080/db/userData/2");
+      const data = await response.json();
+      console.log(data);
+      setUserData(data);
+      setLoading(false);
+      return data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setUserData(EmptyData);
+      setLoading(false);
+      setError(<ErrorAlert description="Error fetching data" />);
+    }
   };
 
   useEffect(() => {
@@ -113,6 +128,7 @@ export default function Dashboard() {
         {selectedProject ? (
           <MarkdownDisplay content={selectedProject.code} />
         ) : null}
+        {error}
         <NewProjectDialog />
       </SidebarInset>
     </SidebarProvider>
