@@ -11,8 +11,8 @@ function DataSetBuilder() {
     { id: 1, title: "Column 1", type: "String" },
   ]);
   const [rowCount, setRowCount] = useState(5);
-  const [selectedLanguage, setSelectedLanguage] = useState(null);
-  const [selectedDBSchema, setSelectedDBSchema] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("Java");
+  const [selectedDBSchema, setSelectedDBSchema] = useState("SQL");
   const [apiResponse, setApiResponse] = useState({ success: false, code: "" });
 
 
@@ -135,20 +135,20 @@ function DataSetBuilder() {
           ))}
         </div>
         <div>
-          <h3 style={styles.sectionHeader}>Select DB Schema</h3>
-          {dbSchemas.map((db) => (
-            <button
-              key={db}
-              onClick={() => setSelectedDBSchema(db)}
-              style={{
-                ...styles.selectButton,
-                backgroundColor: selectedDBSchema === db ? "#0096FF" : "#f4f4f4",
-              }}
-            >
-              {db}
-            </button>
-          ))}
-        </div>
+      <h3 style={styles.sectionHeader}>Select DB Schema</h3>
+      {dbSchemas.map((db) => (
+        <button
+          key={db}
+          onClick={() => setSelectedDBSchema(db)}
+          style={{
+            ...styles.selectButton,
+            backgroundColor: selectedDBSchema === db ? "#0096FF" : "#f4f4f4",
+          }}
+        >
+          {db}
+        </button>
+      ))}
+    </div>
       </div>
 
       {/* API Response */}
