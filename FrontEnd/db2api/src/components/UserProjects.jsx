@@ -32,10 +32,10 @@ export const UserProjects = ({ projects, setSelectedProject }) => {
           </SidebarMenuButton>
         </SidebarMenuItem>
         {projectList.map((project) => (
-          <SidebarMenuItem key={project.id}>
+          <SidebarMenuItem key={project._id}>
             <SidebarMenuButton
               asChild
-              onClick={() => setSelectedProject(project.name)}
+              onClick={() => setSelectedProject(project)}
             >
               <span>{project.name}</span>
             </SidebarMenuButton>

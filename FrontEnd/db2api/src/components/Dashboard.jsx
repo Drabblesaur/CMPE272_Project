@@ -21,57 +21,44 @@ import {
   SidebarProvider,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import React from "react";
+import React, { useEffect } from "react";
 import { UserProfileMenu } from "@/components/UserProfileMenu";
 import { UserProjects } from "@/components/UserProjects";
 import { Header } from "./Header";
 import { NewProjectDialog } from "./NewProjectDialog";
+import DataSetBuilder from "./apigen";
+import MarkdownDisplay from "./MarkdownDisplay";
 import Link from "next/link";
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  userProjects: [
-    {
-      name: "Personal Blog",
-      url: "#",
-      icon: Pencil,
-    },
-    {
-      name: "E-commerce App",
-      url: "#",
-      icon: ShoppingCart,
-    },
-    {
-      name: "Task Manager",
-      url: "#",
-      icon: CheckSquare,
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-};
 
 export default function Dashboard() {
   const [selectedProject, setSelectedProject] = React.useState(null);
+  const [userData, setUserData] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+
+  // API call to get user data
+  const getUserData = () => {
+    fetch("http://127.0.0.1:8080/db/userData/2")
+      .then((response) => response.json())
+      .then((data) => {
+        // Access the data property safely
+        console.log(data);
+        setUserData(data);
+        setLoading(false);
+        return data;
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <SidebarProvider>
@@ -107,13 +94,13 @@ export default function Dashboard() {
           </SidebarMenu>
           <SidebarRail />
           <UserProjects
-            projects={data.userProjects}
+            projects={userData.data[0].userProjects}
             setSelectedProject={setSelectedProject}
           />
         </SidebarContent>
 
         <SidebarFooter>
-          <UserProfileMenu user={data.user} />
+          <UserProfileMenu user={userData.data[0].user} />
         </SidebarFooter>
 
         <SidebarRail />
@@ -121,8 +108,11 @@ export default function Dashboard() {
 
       <SidebarInset>
         <Header selectedProject={selectedProject} />
-        {/* Main content goes here*/}
-
+        {/* Show DataSetBuilder when a project is selected*/}
+        {selectedProject ? <DataSetBuilder project={selectedProject} /> : null}
+        {selectedProject ? (
+          <MarkdownDisplay content={selectedProject.code} />
+        ) : null}
         <NewProjectDialog />
       </SidebarInset>
     </SidebarProvider>

@@ -16,7 +16,7 @@ export const Header = ({ selectedProject }) => (
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbPage>
-              {selectedProject || "Select a Project"}
+              {selectedProject ? selectedProject.name : "Select a Project"}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
