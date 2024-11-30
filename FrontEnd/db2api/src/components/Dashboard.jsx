@@ -46,34 +46,25 @@ const EmptyData = {
 
 export default function Dashboard() {
   const [selectedProject, setSelectedProject] = React.useState(null);
-  const [userData, setUserData] = React.useState(null);
+  const [userData, setUserData] = React.useState(EmptyData);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
 
   // API call to get user data
-  const getUserData = () => {
-    fetch("http://127.0.0.1:8080/db/userData/2")
-      .then((response) => response.json())
-      .then((data) => {
-        // Access the data property safely
-        console.log(data);
-        setUserData(data);
-        setLoading(false);
-        return data;
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        // Load Empty data
-        setUserData(EmptyData);
-        setLoading(false);
-        // Show an error alert
-        setError(
-          <ErrorAlert
-            title="Error fetching data"
-            description="check console for issue"
-          />
-        );
-      });
+  const getUserData = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8080/db/userData/2");
+      const data = await response.json();
+      console.log(data);
+      setUserData(data);
+      setLoading(false);
+      return data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setUserData(EmptyData);
+      setLoading(false);
+      setError(<ErrorAlert message="Error fetching data" />);
+    }
   };
 
   useEffect(() => {
