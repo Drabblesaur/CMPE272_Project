@@ -1,5 +1,6 @@
 import userDataModel from "./models/userData.js"; // Adjust the path as necessary
 import UserData from "./models/userData.js"; // Adjust the path as necessary
+import Project from "./models/project.js";
 
 const responseSchema = {
   response: {
@@ -76,11 +77,20 @@ const userDataController = (fastify, options, done) => {
         if (!userData) {
           return reply.status(404).send({ message: "User data not found" });
         }
-        // Return the githubID along with the user data
+
+        // Query for projects associated with the user
+        const userProjects = await Project.find({ githubID });
+
+        // Return the githubID along with the user data and projects
         return reply.send({
           message: "User data retrieved successfully",
-          profileData: userData.profileData,
-          data: userData.data,
+          data: [
+            {
+              user: userData.profileData,
+              projects: userData.data,
+              userProjects: userProjects,
+            },
+          ],
         });
       } catch (error) {
         return reply.status(500).send({

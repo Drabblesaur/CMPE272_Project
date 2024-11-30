@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 const dataTypes = ["String", "Number", "Date", "Location", "Boolean", "Array"];
 
-function DataSetBuilder() {
+function DataSetBuilder({ project }) {
   const [columns, setColumns] = useState([
     { id: 1, title: "Column 1", type: "String" },
   ]);
@@ -86,6 +86,14 @@ function DataSetBuilder() {
       <p style={styles.description}>
         Design your dataset by configuring columns and preview the generated
         table.
+      </p>
+      <p style={styles.description}>
+        {/*display project details */}
+        Project Name: {project.name}
+        <br />
+        Project ID: {project.githubID}
+        <br />
+        Project Schema: {project.schema}
       </p>
       <div style={styles.formContainer}>
         {columns.map((col) => (
@@ -171,7 +179,7 @@ function DataSetBuilder() {
 const styles = {
   container: {
     fontFamily: "'Roboto', sans-serif",
-    maxWidth: "1000px",
+    width: "100%",
     margin: "30px auto",
     padding: "25px",
     backgroundColor: "#fdfdfd",
@@ -180,14 +188,14 @@ const styles = {
     border: "1px solid #f3f4f6",
   },
   header: {
-    textAlign: "center",
+    textAlign: "left",
     fontSize: "32px",
     fontWeight: "700",
     color: "#333",
     marginBottom: "15px",
   },
   description: {
-    textAlign: "center",
+    textAlign: "left",
     fontSize: "16px",
     color: "#666",
     marginBottom: "30px",
