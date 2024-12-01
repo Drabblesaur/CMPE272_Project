@@ -91,7 +91,7 @@ function DataSetBuilder({ project }) {
         {/*display project details */}
         Project Name: {project.name}
         <br />
-        Project ID: {project.githubID}
+        Project ID: {project._id}
         <br />
         Project Schema: {project.schema}
       </p>

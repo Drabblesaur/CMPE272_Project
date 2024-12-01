@@ -18,12 +18,26 @@ export const ProjectMenu = ({ projectId, onDelete }) => {
     setError(null);
 
     try {
-      // API call to delete the project
-      // for now just log the data
-      console.log(`Deleting project with id ${projectId}`);
+      const response = await fetch(
+        `http://127.0.0.1:8080/prj/project/${projectId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the project");
+      }
+
+      const result = await response.json();
+      console.log(result.message);
 
       // Call the onDelete callback to update the UI
+
       onDelete(projectId);
+
+      //alert("Delete project with id: " + projectId);
+      //onDelete(projectId);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -44,13 +58,12 @@ export const ProjectMenu = ({ projectId, onDelete }) => {
         side="right"
         align="start"
       >
-        <DropdownMenuItem>
-          <Folder className="text-muted-foreground" />
-          <span>View Project</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleDelete} disabled={isLoading}>
-          <Trash2 className="text-muted-foreground" />
+        <DropdownMenuItem
+          onClick={handleDelete}
+          disabled={isLoading}
+          className="text-red-600 hover:!text-red-600 hover:!bg-red-100"
+        >
+          <Trash2 className="text-muted-foreground text-red-500" />
           <span>{isLoading ? "Deleting..." : "Delete Project"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

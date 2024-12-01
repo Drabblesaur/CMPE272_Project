@@ -26,8 +26,7 @@ import { UserProfileMenu } from "@/components/UserProfileMenu";
 import { UserProjects } from "@/components/UserProjects";
 import { Header } from "./Header";
 import { NewProjectDialog } from "./NewProjectDialog";
-import DataSetBuilder from "./apigen";
-import MarkdownDisplay from "./MarkdownDisplay";
+import ProjectContainer from "./ProjectContainer";
 import ErrorAlert from "./alert";
 import Link from "next/link";
 
@@ -71,6 +70,37 @@ export default function Dashboard() {
     getUserData();
   }, []);
 
+  const handleProjectCreated = (newProject) => {
+    console.log("new project", newProject);
+    setUserData((prevData) => ({
+      ...prevData,
+      data: [
+        {
+          ...prevData.data[0],
+          userProjects: [...prevData.data[0].userProjects, newProject],
+        },
+      ],
+    }));
+  };
+  const handleDelete = (projectId) => {
+    //console.log("Delete project with id: " + projectId);
+    //console.log(selectedProject._id);
+    if (selectedProject._id === projectId) {
+      setSelectedProject(null);
+    }
+    setUserData((prevData) => ({
+      ...prevData,
+      data: [
+        {
+          ...prevData.data[0],
+          userProjects: prevData.data[0].userProjects.filter(
+            (project) => project.id !== projectId
+          ),
+        },
+      ],
+    }));
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -111,6 +141,7 @@ export default function Dashboard() {
           <UserProjects
             projects={userData.data[0].userProjects}
             setSelectedProject={setSelectedProject}
+            handleDelete={handleDelete}
           />
         </SidebarContent>
 
@@ -124,12 +155,15 @@ export default function Dashboard() {
       <SidebarInset>
         <Header selectedProject={selectedProject} />
         {/* Show DataSetBuilder when a project is selected*/}
-        {selectedProject ? <DataSetBuilder project={selectedProject} /> : null}
         {selectedProject ? (
-          <MarkdownDisplay content={selectedProject.code} />
+          <ProjectContainer project={selectedProject} />
         ) : null}
+
         {error}
-        <NewProjectDialog />
+        <NewProjectDialog
+          user={userData.data[0].user}
+          onProjectCreated={handleProjectCreated}
+        />
       </SidebarInset>
     </SidebarProvider>
   );

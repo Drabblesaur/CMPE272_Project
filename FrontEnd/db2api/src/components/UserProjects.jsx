@@ -10,11 +10,18 @@ import {
 } from "@/components/ui/sidebar";
 import { ProjectMenu } from "./ProjectMenu";
 
-export const UserProjects = ({ projects, setSelectedProject }) => {
+export const UserProjects = ({
+  projects,
+  setSelectedProject,
+  handleDelete,
+}) => {
   const [projectList, setProjectList] = useState(projects);
 
-  const handleDelete = (projectId) => {
-    setProjectList(projectList.filter((project) => project.id !== projectId));
+  const handleLocalDelete = (projectId) => {
+    setProjectList((prevProjects) =>
+      prevProjects.filter((project) => project._id !== projectId)
+    );
+    handleDelete(projectId);
   };
 
   return (
@@ -39,7 +46,7 @@ export const UserProjects = ({ projects, setSelectedProject }) => {
             >
               <span>{project.name}</span>
             </SidebarMenuButton>
-            <ProjectMenu projectId={project.id} onDelete={handleDelete} />
+            <ProjectMenu projectId={project._id} onDelete={handleLocalDelete} />
           </SidebarMenuItem>
         ))}
       </SidebarMenu>

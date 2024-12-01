@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import Project from "./models/project.js";
+import UserData from "./models/userData.js";
 
 const responseSchema = {
   response: {
@@ -29,7 +31,7 @@ const projectController = (fastify, options, done) => {
         const savedProject = await newProject.save();
         return reply.send({
           message: "Project created successfully!",
-          data: savedProject,
+          data: [savedProject._id],
         });
       } catch (error) {
         return reply
@@ -44,15 +46,27 @@ const projectController = (fastify, options, done) => {
     "/project/:id",
     { schema: responseSchema },
     async (request, reply) => {
-      const { id } = request.params;
       try {
-        const deletedProject = await Project.findByIdAndDelete(id);
+        console.log(request.params.id);
+        if (!request.params.id) {
+          return reply.status(400).send({ message: "Project ID is required" });
+        }
+        if (mongoose.Types.ObjectId.isValid(request.params.id) === false) {
+          return reply.status(400).send({ message: "Invalid project ID" });
+        }
+        const deletedProject = await Project.findByIdAndDelete(
+          request.params.id
+        );
         if (!deletedProject) {
           return reply.status(404).send({ message: "Project not found" });
         }
+        await UserData.updateOne(
+          { githubID: deletedProject.githubID },
+          { $pull: { data: { _id: request.params.id } } }
+        );
         return reply.send({
           message: "Project deleted successfully!",
-          data: deletedProject,
+          data: [request.params.id],
         });
       } catch (error) {
         return reply
