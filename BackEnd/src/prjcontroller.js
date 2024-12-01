@@ -31,7 +31,7 @@ const projectController = (fastify, options, done) => {
         const savedProject = await newProject.save();
         return reply.send({
           message: "Project created successfully!",
-          data: savedProject,
+          data: [savedProject._id],
         });
       } catch (error) {
         return reply

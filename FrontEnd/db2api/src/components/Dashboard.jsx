@@ -70,6 +70,18 @@ export default function Dashboard() {
     getUserData();
   }, []);
 
+  const handleProjectCreated = (newProject) => {
+    console.log("new project", newProject);
+    setUserData((prevData) => ({
+      ...prevData,
+      data: [
+        {
+          ...prevData.data[0],
+          userProjects: [...prevData.data[0].userProjects, newProject],
+        },
+      ],
+    }));
+  };
   const handleDelete = (projectId) => {
     //console.log("Delete project with id: " + projectId);
     //console.log(selectedProject._id);
@@ -148,7 +160,10 @@ export default function Dashboard() {
         ) : null}
 
         {error}
-        <NewProjectDialog />
+        <NewProjectDialog
+          user={userData.data[0].user}
+          onProjectCreated={handleProjectCreated}
+        />
       </SidebarInset>
     </SidebarProvider>
   );

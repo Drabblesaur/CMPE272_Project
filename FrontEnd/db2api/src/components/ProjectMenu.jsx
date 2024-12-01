@@ -58,13 +58,12 @@ export const ProjectMenu = ({ projectId, onDelete }) => {
         side="right"
         align="start"
       >
-        <DropdownMenuItem>
-          <Folder className="text-muted-foreground" />
-          <span>View Project</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleDelete} disabled={isLoading}>
-          <Trash2 className="text-muted-foreground" />
+        <DropdownMenuItem
+          onClick={handleDelete}
+          disabled={isLoading}
+          className="text-red-600 hover:!text-red-600 hover:!bg-red-100"
+        >
+          <Trash2 className="text-muted-foreground text-red-500" />
           <span>{isLoading ? "Deleting..." : "Delete Project"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
