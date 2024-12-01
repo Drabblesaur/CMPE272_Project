@@ -27,8 +27,6 @@ import { UserProjects } from "@/components/UserProjects";
 import { Header } from "./Header";
 import { NewProjectDialog } from "./NewProjectDialog";
 import ProjectContainer from "./ProjectContainer";
-import DataSetBuilder from "./apigen";
-import MarkdownDisplay from "./MarkdownDisplay";
 import ErrorAlert from "./alert";
 import Link from "next/link";
 
@@ -72,6 +70,25 @@ export default function Dashboard() {
     getUserData();
   }, []);
 
+  const handleDelete = (projectId) => {
+    //console.log("Delete project with id: " + projectId);
+    //console.log(selectedProject._id);
+    if (selectedProject._id === projectId) {
+      setSelectedProject(null);
+    }
+    setUserData((prevData) => ({
+      ...prevData,
+      data: [
+        {
+          ...prevData.data[0],
+          userProjects: prevData.data[0].userProjects.filter(
+            (project) => project.id !== projectId
+          ),
+        },
+      ],
+    }));
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -112,6 +129,7 @@ export default function Dashboard() {
           <UserProjects
             projects={userData.data[0].userProjects}
             setSelectedProject={setSelectedProject}
+            handleDelete={handleDelete}
           />
         </SidebarContent>
 

@@ -18,12 +18,26 @@ export const ProjectMenu = ({ projectId, onDelete }) => {
     setError(null);
 
     try {
-      // API call to delete the project
-      // for now just log the data
-      console.log(`Deleting project with id ${projectId}`);
+      const response = await fetch(
+        `http://127.0.0.1:8080/prj/project/${projectId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the project");
+      }
+
+      const result = await response.json();
+      console.log(result.message);
 
       // Call the onDelete callback to update the UI
+
       onDelete(projectId);
+
+      //alert("Delete project with id: " + projectId);
+      //onDelete(projectId);
     } catch (err) {
       setError(err.message);
     } finally {
