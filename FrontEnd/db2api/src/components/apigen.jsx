@@ -17,47 +17,6 @@ function DataSetBuilder({ project }) {
   const [prompt, setPrompt] = useState(""); // State for the prompt
   const [chatResponse, setChatResponse] = useState(""); // State for chat response
 
-  // Function to handle prompt submission
-  const handlePromptSubmit = async () => {
-    try {
-      const schema = columns
-        .map((col) => `${col.title}(${col.type})`)
-        .join(",");
-      const apiUrl = `http://127.0.0.1:8080/ai/generateCustom?schema=${encodeURIComponent(
-        schema
-      )}&language=${encodeURIComponent(
-        selectedLanguage
-      )}&database=${encodeURIComponent(selectedDBSchema)}`;
-
-      const requestBody = {
-        userInput: prompt, // Sending the user's prompt
-      };
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody), // Send the body as a string
-      });
-
-      if (!response.ok) {
-        throw new Error(`API call failed with status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-
-      if (responseData.success) {
-        setChatResponse(responseData.code || "No response code provided"); // Update with the response code or a fallback
-      } else {
-        throw new Error(responseData.error || "Unknown error occurred");
-      }
-    } catch (error) {
-      console.error("Error submitting prompt:", error);
-      setChatResponse(`Error: ${error.message}`);
-    }
-  };
-
   const generateSampleData = () => {
     const sampleRows = [];
     for (let i = 0; i < rowCount; i++) {
@@ -202,7 +161,7 @@ function DataSetBuilder({ project }) {
       <h1 style={styles.header}>Dataset Builder</h1>
       <p style={styles.description}>
         Customize your dataset, choose a programming language, and select a
-        database schema.
+        database schema. It will generate CRUD API code for your dataset.
       </p>
       <p> {project._id}</p>
 
@@ -335,20 +294,6 @@ function DataSetBuilder({ project }) {
             </tbody>
           </table>
         </div>
-      </div>
-
-      {/* Toolbar Section */}
-      <div style={styles.toolbar}>
-        <input
-          type="text"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter your prompt..."
-          style={styles.promptInput}
-        />
-        <button onClick={handlePromptSubmit} style={styles.promptButton}>
-          Submit
-        </button>
       </div>
 
       {/* ChatGPT-like Response */}
