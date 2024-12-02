@@ -14,6 +14,44 @@ function DataSetBuilder() {
   const [selectedLanguage, setSelectedLanguage] = useState("Java");
   const [selectedDBSchema, setSelectedDBSchema] = useState("SQL");
   const [apiResponse, setApiResponse] = useState({ success: false, code: "" });
+  const [prompt, setPrompt] = useState(""); // State for the prompt
+  const [chatResponse, setChatResponse] = useState(""); // State for chat response
+
+  // Function to handle prompt submission
+  const handlePromptSubmit = async () => {
+    try {
+      const schema = columns.map(col => `${col.title}(${col.type})`).join(",");
+      const apiUrl = `http://127.0.0.1:8080/ai/generateCustom?schema=${encodeURIComponent(schema)}&language=${encodeURIComponent(selectedLanguage)}&database=${encodeURIComponent(selectedDBSchema)}`;
+  
+      const requestBody = {
+        userInput: prompt, // Sending the user's prompt
+      };
+  
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody), // Send the body as a string
+      });
+  
+      if (!response.ok) {
+        throw new Error(`API call failed with status: ${response.status}`);
+      }
+  
+      const responseData = await response.json();
+  
+      if (responseData.success) {
+        setChatResponse(responseData.code || "No response code provided"); // Update with the response code or a fallback
+      } else {
+        throw new Error(responseData.error || "Unknown error occurred");
+      }
+    } catch (error) {
+      console.error("Error submitting prompt:", error);
+      setChatResponse(`Error: ${error.message}`);
+    }
+  };
+  
 
 
   const generateSampleData = () => {
@@ -246,6 +284,39 @@ function DataSetBuilder() {
           </table>
         </div>
       </div>
+
+      {/* Toolbar Section */}
+      <div style={styles.toolbar}>
+        <input
+          type="text"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Enter your prompt..."
+          style={styles.promptInput}
+        />
+        <button onClick={handlePromptSubmit} style={styles.promptButton}>
+          Submit
+        </button>
+      </div>
+
+      {/* ChatGPT-like Response */}
+      
+<div style={styles.codeContainer}>
+  {apiResponse.success && (
+    <div>
+      <h3>Generated API Code:</h3>
+      <pre style={styles.codeBlock}>{apiResponse.code}</pre>
+    </div>
+  )}
+</div>
+
+
+      {/* Existing Dataset Builder UI
+      <h1 style={styles.header}>Dataset Builder</h1>
+      <p style={styles.description}>
+        Customize your dataset, choose a programming language, and select a database schema.
+      </p> */}
+
     </div>
   );
 }
@@ -261,6 +332,43 @@ const styles = {
     boxShadow: "0 6px 16px rgba(0, 0, 0, 0.1)",
     border: "1px solid #ddd",
   },
+  toolbar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+    padding: "10px",
+    backgroundColor: "#f8f9fa",
+    borderRadius: "5px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+  },
+  promptInput: {
+    flex: 1,
+    padding: "10px",
+    marginRight: "10px",
+    borderRadius: "5px",
+    border: "1px solid #ddd",
+    fontSize: "16px",
+  },
+  promptButton: {
+    padding: "10px 20px",
+    backgroundColor: "#007bff",
+    color: "white",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  chatResponse: {
+    marginTop: "20px",
+    padding: "15px",
+    backgroundColor: "#e9f7df",
+    borderRadius: "5px",
+    border: "1px solid #c3e6cb",
+    color: "#155724",
+  },
+  header: { fontSize: "24px", textAlign: "center", marginBottom: "15px", color: "#333" },
+  description: { textAlign: "center", color: "#666" },
   header: {
     fontSize: "24px",
     textAlign: "center",
