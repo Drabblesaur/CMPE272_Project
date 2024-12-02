@@ -20,10 +20,10 @@ const projectController = (fastify, options, done) => {
     "/project",
     { schema: responseSchema },
     async (request, reply) => {
-      const { githubID, name, schema, code } = request.body;
+      const { userID, name, schema, code } = request.body;
       try {
         const newProject = new Project({
-          githubID,
+          userID,
           name,
           schema,
           code,
@@ -78,12 +78,12 @@ const projectController = (fastify, options, done) => {
 
   // Get all projects for a user
   fastify.get(
-    "/projects/:githubID",
+    "/projects/:userID",
     { schema: responseSchema },
     async (request, reply) => {
-      const { githubID } = request.params;
+      const { ObjectID } = request.params;
       try {
-        const projects = await Project.find({ githubID });
+        const projects = await Project.find({ ObjectID });
         return reply.send({
           message: "Projects retrieved successfully!",
           data: projects,

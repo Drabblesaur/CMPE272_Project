@@ -314,17 +314,6 @@ function DataSetBuilder({ project }) {
           </table>
         </div>
       </div>
-
-      {/* ChatGPT-like Response */}
-
-      <div style={styles.codeContainer}>
-        {apiResponse.success && (
-          <div>
-            <h3>Generated API Code:</h3>
-            <pre style={styles.codeBlock}>{apiResponse.code}</pre>
-          </div>
-        )}
-      </div>
       <Toaster />
     </div>
   );

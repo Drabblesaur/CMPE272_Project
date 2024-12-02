@@ -25,9 +25,13 @@ const EmptyData = {
   data: [
     {
       user: {
-        id: 0,
-        name: "User",
-        email: "email.com",
+        _id: "6743494edd70ab7be0b538f3",
+        githubID: "2",
+        profileData: {
+          name: "John Doe",
+          email: "john.doe@example.com",
+          avatar_url: "https://example.com/avatar.jpg",
+        },
       },
       userProjects: [],
     },
@@ -40,11 +44,15 @@ export default function Dashboard() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const { toast } = useToast();
+  //Delete this line and replace with actual user ID
+  const userID = "6743494edd70ab7be0b538f3";
 
   // API call to get user data
   const getUserData = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8080/db/userData/2");
+      const response = await fetch(
+        "http://127.0.0.1:8080/db/userData/6743494edd70ab7be0b538f3"
+      );
       const data = await response.json();
       console.log(data);
       setUserData(data);

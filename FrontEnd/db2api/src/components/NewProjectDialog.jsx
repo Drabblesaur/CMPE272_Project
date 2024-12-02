@@ -12,7 +12,7 @@ export const NewProjectDialog = ({ user, onProjectCreated }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        githubID: 2, // Replace with actual GitHub ID
+        userID: user._id, // Replace with actual GitHub ID
         name: projectName,
         schema: "none", // Add schema if needed
         code: "none", // Add code if needed
@@ -31,7 +31,7 @@ export const NewProjectDialog = ({ user, onProjectCreated }) => {
   return (
     <dialog id="new-project-form" className="p-4 rounded-lg shadow-lg">
       <h2 className="text-lg font-semibold mb-4">Create New Project</h2>
-      <p>Creates for {user.githubID}</p>
+      <p>Creates for {user._id}</p>
       <form method="dialog" className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <label

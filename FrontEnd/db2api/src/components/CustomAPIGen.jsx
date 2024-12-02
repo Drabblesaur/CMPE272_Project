@@ -25,6 +25,15 @@ export default function CustomAPIGen({ project }) {
       });
       return;
     }
+    if (schema === "none") {
+      toast({
+        variant: "destructive",
+        title: "No schema found",
+        description:
+          "Seems like there is no schema associated with this project. Please add a schema to generate API code",
+      });
+      return;
+    }
     toast({
       title: "Generating Custom Route",
       description: "Please wait while the route is being generated...",
