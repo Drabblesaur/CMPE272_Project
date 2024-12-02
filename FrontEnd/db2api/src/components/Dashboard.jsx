@@ -1,14 +1,5 @@
 "use client";
-import {
-  Boxes,
-  Pencil,
-  ShoppingCart,
-  CheckSquare,
-  Frame,
-  PieChart,
-  Map,
-  MessageSquareCode,
-} from "lucide-react";
+import { Boxes } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -27,8 +18,8 @@ import { UserProjects } from "@/components/UserProjects";
 import { Header } from "./Header";
 import { NewProjectDialog } from "./NewProjectDialog";
 import ProjectContainer from "./ProjectContainer";
-import ErrorAlert from "./alert";
-import Link from "next/link";
+import { Toaster } from "./ui/toaster";
+import { useToast } from "@/hooks/use-toast";
 
 const EmptyData = {
   data: [
@@ -48,6 +39,7 @@ export default function Dashboard() {
   const [userData, setUserData] = React.useState(EmptyData);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const { toast } = useToast();
 
   // API call to get user data
   const getUserData = async () => {
@@ -62,7 +54,11 @@ export default function Dashboard() {
       console.error("Error fetching data:", error);
       setUserData(EmptyData);
       setLoading(false);
-      setError(<ErrorAlert description="Error fetching data" />);
+      toast({
+        variant: "destructive",
+        title: "Error fetching data",
+        description: "Please try again later",
+      });
     }
   };
 
@@ -81,10 +77,19 @@ export default function Dashboard() {
         },
       ],
     }));
+    toast({
+      title: "Project created successfully",
+      description: "Project has been created successfully.",
+    });
   };
   const handleDelete = (projectId) => {
     //console.log("Delete project with id: " + projectId);
     //console.log(selectedProject._id);
+    toast({
+      variant: "destructive",
+      title: "Project deleted successfully",
+      description: "Project has been deleted successfully.",
+    });
     if (selectedProject._id === projectId) {
       setSelectedProject(null);
     }
@@ -153,7 +158,7 @@ export default function Dashboard() {
           <ProjectContainer project={selectedProject} />
         ) : null}
 
-        {error}
+        <Toaster />
         {userData.data && userData.data.length > 0 && (
           <NewProjectDialog
             user={userData.data[0].user}

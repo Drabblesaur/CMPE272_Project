@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkCodeBlocks from "remark-code-blocks";
+import { Toaster } from "./ui/toaster";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CustomAPIGen({ project }) {
   const [code, setCode] = useState("");
@@ -8,15 +10,25 @@ export default function CustomAPIGen({ project }) {
   const [Database, setDatabase] = useState("");
   const [apiPrompt, setApiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
 
   var schema = project.schema;
   var projectCode = project.code;
 
   const generateCode = async () => {
     if (!pLanguage || !Database || !apiPrompt) {
-      alert("Please fill in all fields before generating the code.");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          "Please select a programming language, database type, and enter an API prompt",
+      });
       return;
     }
+    toast({
+      title: "Generating Custom Route",
+      description: "Please wait while the route is being generated...",
+    });
     try {
       setIsGenerating(true);
       const apiUrl = `http://127.0.0.1:8080/ai/generateCustom?schema=${encodeURIComponent(
@@ -35,6 +47,11 @@ export default function CustomAPIGen({ project }) {
       });
 
       if (!response.ok) {
+        toast({
+          variant: "destructive",
+          title: "Failed to generate API code",
+          description: "Please try again later",
+        });
         throw new Error("Failed to generate API code");
       }
 
@@ -42,9 +59,17 @@ export default function CustomAPIGen({ project }) {
       setCode(result.code || "No code generated");
     } catch (error) {
       console.error("Error generating API code:", error);
-      setCode("Error generating API code");
+      toast({
+        variant: "destructive",
+        title: "Failed to generate API code",
+        description: "Please try again later",
+      });
     } finally {
       setIsGenerating(false);
+      toast({
+        title: "Custom Route Generated",
+        description: "The custom route has been generated successfully",
+      });
     }
   };
 
@@ -122,6 +147,7 @@ export default function CustomAPIGen({ project }) {
       <div style={styles.code}>
         <ReactMarkdown remarkPlugins={remarkCodeBlocks}>{code}</ReactMarkdown>
       </div>
+      <Toaster />
     </div>
   );
 }

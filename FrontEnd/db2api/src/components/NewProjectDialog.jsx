@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast, useToast } from "@/hooks/use-toast";
 
 export const NewProjectDialog = ({ user, onProjectCreated }) => {
   const [projectName, setProjectName] = useState("");
@@ -20,12 +21,10 @@ export const NewProjectDialog = ({ user, onProjectCreated }) => {
 
     const result = await response.json();
     if (response.ok) {
-      alert("Project created successfully!");
       document.getElementById("new-project-form").close();
       onProjectCreated(result);
     } else {
       console.error(result);
-      alert(`Error: ${result.message}`);
     }
   };
 

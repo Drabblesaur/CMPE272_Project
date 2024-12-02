@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { Toaster } from "./ui/toaster";
+import { useToast } from "@/hooks/use-toast";
 
 const dataTypes = ["String", "Number", "Date", "Location", "Boolean", "Array"];
 const languages = ["Java", "JavaScript", "Python"];
@@ -14,8 +16,8 @@ function DataSetBuilder({ project }) {
   const [selectedLanguage, setSelectedLanguage] = useState("Java");
   const [selectedDBSchema, setSelectedDBSchema] = useState("SQL");
   const [apiResponse, setApiResponse] = useState({ success: false, code: "" });
-  const [prompt, setPrompt] = useState(""); // State for the prompt
-  const [chatResponse, setChatResponse] = useState(""); // State for chat response
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
 
   const generateSampleData = () => {
     const sampleRows = [];
@@ -114,6 +116,11 @@ function DataSetBuilder({ project }) {
   };
 
   const handleGenerateAPI = async () => {
+    setIsGenerating(true);
+    toast({
+      title: "Generating API",
+      description: "Please wait while the API is being generated...",
+    });
     try {
       const schema = columns
         .map((col) => `${col.title}(${col.type})`)
@@ -151,6 +158,18 @@ function DataSetBuilder({ project }) {
     } catch (error) {
       console.error("Error generating API:", error);
       // alert("An error occurred while generating the API. Check the console for details.");
+      toast({
+        variant: "destructive",
+        title: "Error generating API",
+        description:
+          "An error occurred while generating the API. Check the console for details.",
+      });
+    } finally {
+      setIsGenerating(false);
+      toast({
+        title: "API generated successfully",
+        description: "API has been generated successfully.",
+      });
     }
   };
 
@@ -261,9 +280,9 @@ function DataSetBuilder({ project }) {
         <button
           onClick={handleGenerateAPI}
           style={styles.generateButton}
-          disabled={!selectedLanguage || !selectedDBSchema}
+          disabled={!selectedLanguage || !selectedDBSchema || isGenerating}
         >
-          🚀 Generate API
+          {isGenerating ? "Generating..." : "🚀 Generate API"}
         </button>
       </div>
 
@@ -306,6 +325,7 @@ function DataSetBuilder({ project }) {
           </div>
         )}
       </div>
+      <Toaster />
     </div>
   );
 }
