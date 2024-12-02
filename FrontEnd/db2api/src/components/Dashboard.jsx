@@ -25,7 +25,7 @@ const EmptyData = {
   data: [
     {
       user: {
-        _id: "6743494edd70ab7be0b538f3",
+        _id: "12345",
         githubID: "2",
         profileData: {
           name: "John Doe",
