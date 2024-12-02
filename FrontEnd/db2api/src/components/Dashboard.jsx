@@ -138,15 +138,19 @@ export default function Dashboard() {
             </SidebarMenuItem>
           </SidebarMenu>
           <SidebarRail />
-          <UserProjects
-            projects={userData.data[0].userProjects}
-            setSelectedProject={setSelectedProject}
-            handleDelete={handleDelete}
-          />
+          {userData.data && userData.data.length > 0 && (
+            <UserProjects
+              projects={userData.data[0].userProjects}
+              setSelectedProject={setSelectedProject}
+              handleDelete={handleDelete}
+            />
+          )}
         </SidebarContent>
 
         <SidebarFooter>
-          <UserProfileMenu user={userData.data[0].user} />
+          {userData.data && userData.data.length > 0 && (
+            <UserProfileMenu user={userData.data[0].user} />
+          )}
         </SidebarFooter>
 
         <SidebarRail />
@@ -160,10 +164,12 @@ export default function Dashboard() {
         ) : null}
 
         {error}
-        <NewProjectDialog
-          user={userData.data[0].user}
-          onProjectCreated={handleProjectCreated}
-        />
+        {userData.data && userData.data.length > 0 && (
+          <NewProjectDialog
+            user={userData.data[0].user}
+            onProjectCreated={handleProjectCreated}
+          />
+        )}
       </SidebarInset>
     </SidebarProvider>
   );
