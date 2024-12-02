@@ -127,16 +127,6 @@ export default function Dashboard() {
         </SidebarHeader>
 
         <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <Link href="/chat">
-                <SidebarMenuButton>
-                  <MessageSquareCode />
-                  <span>Chat</span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-          </SidebarMenu>
           <SidebarRail />
           {userData.data && userData.data.length > 0 && (
             <UserProjects

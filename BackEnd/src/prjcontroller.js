@@ -96,6 +96,58 @@ const projectController = (fastify, options, done) => {
     }
   );
 
+  // Update Project code
+  fastify.put(
+    "/project/:id",
+    { schema: responseSchema },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { code } = request.body;
+      try {
+        const updatedProject = await Project.findByIdAndUpdate(
+          id,
+          { code },
+          { new: true }
+        );
+        if (!updatedProject) {
+          return reply.status(404).send({ message: "Project not found" });
+        }
+        reply.send({
+          message: "Project code updated successfully",
+          data: [updatedProject],
+        });
+      } catch (error) {
+        reply
+          .status(500)
+          .send({ message: "Error updating project code", error });
+      }
+    }
+  );
+
+  // Update Project schema
+  fastify.put("/project/:id/schema", async (request, reply) => {
+    const { id } = request.params;
+    const { schema } = request.body;
+    try {
+      const updatedProject = await Project.findByIdAndUpdate(
+        id,
+        { schema },
+        { new: true }
+      );
+      if (!updatedProject) {
+        return reply.status(404).send({ message: "Project not found" });
+      }
+      reply.send({
+        message: "Project schema updated successfully",
+        data: [updatedProject],
+      });
+    } catch (error) {
+      reply
+        .status(500)
+        .send({ message: "Error updating project schema", error });
+    }
+  });
+
   done();
 };
 
