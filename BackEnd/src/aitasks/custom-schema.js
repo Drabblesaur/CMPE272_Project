@@ -50,7 +50,7 @@ async function generateCustom(schema, language, database, userInput) {
             messages: [
                 { 
                     role: "system", 
-                    content: "You write CRUD APIs in usable code format only. Do not output anything but code. Do not speak to the user. Only output code. Do not include any follow-up. Stop response after code is complete"
+                    content: "You write CRUD APIs in usable code format only. Do not output anything but code. Do not speak to the user. Take into consideration the addutional info when writing the code. Only output code. Do not include any follow-up. Stop response after code is complete"
                 },
                 { 
                     role: "user", 
