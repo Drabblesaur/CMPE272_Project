@@ -126,7 +126,7 @@ const start = async () => {
   try {
     await app.listen({ port: 8080 });
     app.log.info(`server listening on ${app.server.address().port}`);
-    await httpsApp.listen({ port: 80 });
+    await httpsApp.listen({ port: 80, host: '0.0.0.0'});
     httpsApp.log.info(`server listening on ${httpsApp.server.address().port}`);
   } catch (err) {
     app.log.error(err);
