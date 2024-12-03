@@ -10,6 +10,7 @@ import mongoose from "mongoose";
 dotenv.config();
 
 const app = fastify({ logger: true }); // Creating a Fastify instance
+const httpsApp = fastify({ logger: true }); 
 
 // Connect to MongoDB
 mongoose
@@ -28,8 +29,25 @@ app.register(cors, {
   origin: "*", // Allow all origins
 });
 
+httpsApp.register(cors, {
+  origin: "*", // Allow all origins
+})
+
 // Register GitHub OAuth plugin
 app.register(oauth2, {
+  name: "githubOAuth",
+  credentials: {
+    client: {
+      id: process.env.GITHUB_CLIENT_ID,
+      secret: process.env.GITHUB_CLIENT_SECRET,
+    },
+    auth: oauth2.GITHUB_CONFIGURATION,
+  },
+  startRedirectPath: "/auth/login",
+  callbackUri: process.env.GITHUB_REDIRECT_URI,
+});
+
+httpsApp.register(oauth2, {
   name: "githubOAuth",
   credentials: {
     client: {
@@ -100,11 +118,16 @@ app.post("/signup", async (req, res) => {
 app.register(aiController, { prefix: "/ai" });
 app.register(dbController, { prefix: "/db" });
 app.register(projectController, { prefix: "/prj" });
+httpsApp.register(aiController, { prefix: "/ai" });
+httpsApp.register(dbController, { prefix: "/db" });
+httpsApp.register(projectController, { prefix: "/prj" });
 
 const start = async () => {
   try {
     await app.listen({ port: 8080 });
     app.log.info(`server listening on ${app.server.address().port}`);
+    await httpsApp.listen({ port: 80 });
+    httpsApp.log.info(`server listening on ${httpsApp.server.address().port}`);
   } catch (err) {
     app.log.error(err);
     process.exit(1);
