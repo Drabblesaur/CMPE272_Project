@@ -6,8 +6,10 @@ import oauth2 from "@fastify/oauth2";
 import dbController from "./dbcontroller.js";
 import projectController from "./prjcontroller.js";
 import mongoose from "mongoose";
-import { User, validate } from "./models/user.js";
-import UserData from "./models/userData.js";
+// import { User, validate } from "./models/user.js";
+// import UserData from "./models/userData.js";
+
+import loginController from "./logincontroller.js";
 
 dotenv.config();
 
@@ -83,61 +85,15 @@ app.get("/auth/callback", async (req, reply) => {
   }
 });
 
-app.post("/signup", async (req, res) => {
-  // Validate the request body
-  const { error } = validate(req.body);
-  if (error)
-    return res
-      .status(400)
-      .send({ success: false, message: error.details[0].message });
-
-  // Check if the user already exists
-  let user = await User.findOne({ email: req.body.email });
-  if (user)
-    return res
-      .status(400)
-      .send({ success: false, message: "User already registered." });
-
-  // Create a new user
-  user = new User({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    password: req.body.password,
-  });
-
-  // Save the user
-  await user.save();
-
-  const fullName = `${user.firstName} ${user.lastName}`;
-  // Create a new UserData document
-  const userData = new UserData({
-    user: user._id,
-    githubID: req.body.githubID || null,
-    accessToken: req.body.accessToken || null,
-    refreshToken: req.body.refreshToken || null,
-    profileData: {
-      name: fullName,
-      email: req.body.email || "john.doe@example.com",
-      avatar_url: "https://example.com/avatar.jpg",
-    },
-    data: req.body.data || [],
-  });
-
-  // Save the UserData document
-  await userData.save();
-
-  // Send a success response
-  res.send({ success: true, message: "User registered successfully." });
-});
-
 // register ai controller
 app.register(aiController, { prefix: "/ai" });
 app.register(dbController, { prefix: "/db" });
 app.register(projectController, { prefix: "/prj" });
+app.register(loginController, { prefix: "/login" });
 httpsApp.register(aiController, { prefix: "/ai" });
 httpsApp.register(dbController, { prefix: "/db" });
 httpsApp.register(projectController, { prefix: "/prj" });
+httpsApp.register(loginController, { prefix: "/login" });
 
 const start = async () => {
   try {
