@@ -1,14 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
+import { Toaster } from "./ui/toaster";
+import { useToast } from "@/hooks/use-toast";
 
 const dataTypes = ["String", "Number", "Date", "Location", "Boolean", "Array"];
+const languages = ["Java", "JavaScript", "Python"];
+const dbSchemas = ["SQL", "MongoDB", "PostgreSQL"];
 
 function DataSetBuilder({ project }) {
   const [columns, setColumns] = useState([
     { id: 1, title: "Column 1", type: "String" },
   ]);
   const [rowCount, setRowCount] = useState(5);
+  const [selectedLanguage, setSelectedLanguage] = useState("Java");
+  const [selectedDBSchema, setSelectedDBSchema] = useState("SQL");
+  const [apiResponse, setApiResponse] = useState({ success: false, code: "" });
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
 
   const generateSampleData = () => {
     const sampleRows = [];
@@ -68,14 +77,100 @@ function DataSetBuilder({ project }) {
     );
   };
 
-  const handleGenerateAPI = () => {
-    const apiPreview = {
-      columns,
-      rows: rowCount,
-      data: generateSampleData(),
-    };
-    console.log("Generated API:", apiPreview);
-    alert("API generated! Check console for details.");
+  const updateProjectCode = async (newCode) => {
+    const projectUrl = `http://127.0.0.1:8080/prj/project/${project._id}`;
+    const response = await fetch(projectUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ code: newCode }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Project code updated successfully:", data);
+    } else {
+      const error = await response.json();
+      console.error("Error updating project code:", error);
+    }
+  };
+
+  const updateProjectSchema = async (newSchema) => {
+    const projectUrl = `http://127.0.0.1:8080/prj/project/${project._id}/schema`;
+    const response = await fetch(projectUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ schema: newSchema }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Project schema updated successfully:", data);
+    } else {
+      const error = await response.json();
+      console.error("Error updating project schema:", error);
+    }
+  };
+
+  const handleGenerateAPI = async () => {
+    setIsGenerating(true);
+    toast({
+      title: "Generating API",
+      description: "Please wait while the API is being generated...",
+    });
+    try {
+      const schema = columns
+        .map((col) => `${col.title}(${col.type})`)
+        .join(",");
+
+      const apiUrl = `http://127.0.0.1:8080/ai/generateCRUD?schema=${schema}&language=${selectedLanguage}&database=${selectedDBSchema}`;
+      const response = await fetch(apiUrl, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error(`API call failed with status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      if (responseData.success) {
+        // Update state with the response data (success and code)
+        setApiResponse({
+          success: responseData.success,
+          code: responseData.code,
+        });
+        // Save the generated code to the project
+        updateProjectCode(responseData.code);
+        // Save the schema to the project
+        updateProjectSchema(schema);
+
+        // Optionally, you can also display the success checkpoints or any other data.
+        console.log("API Response:", responseData);
+
+        // alert("API generated successfully! Check the console for details.");
+      } else {
+        throw new Error("API generation failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error generating API:", error);
+      // alert("An error occurred while generating the API. Check the console for details.");
+      toast({
+        variant: "destructive",
+        title: "Error generating API",
+        description:
+          "An error occurred while generating the API. Check the console for details.",
+      });
+    } finally {
+      setIsGenerating(false);
+      toast({
+        title: "API generated successfully",
+        description: "API has been generated successfully.",
+      });
+    }
   };
 
   const sampleData = generateSampleData();
@@ -84,17 +179,58 @@ function DataSetBuilder({ project }) {
     <div style={styles.container}>
       <h1 style={styles.header}>Dataset Builder</h1>
       <p style={styles.description}>
-        Design your dataset by configuring columns and preview the generated
-        table.
+        Customize your dataset, choose a programming language, and select a
+        database schema. It will generate CRUD API code for your dataset.
       </p>
-      <p style={styles.description}>
-        {/*display project details */}
-        Project Name: {project.name}
-        <br />
-        Project ID: {project._id}
-        <br />
-        Project Schema: {project.schema}
-      </p>
+      <p> {project._id}</p>
+
+      {/* Language and DB Schema Selection */}
+      <div style={styles.selectionContainer}>
+        <div>
+          <h3 style={styles.sectionHeader}>Select Language</h3>
+          {languages.map((lang) => (
+            <button
+              key={lang}
+              onClick={() => setSelectedLanguage(lang)}
+              style={{
+                ...styles.selectButton,
+                backgroundColor:
+                  selectedLanguage === lang ? "#27ae60" : "#f4f4f4",
+              }}
+            >
+              {lang}
+            </button>
+          ))}
+        </div>
+        <div>
+          <h3 style={styles.sectionHeader}>Select DB Schema</h3>
+          {dbSchemas.map((db) => (
+            <button
+              key={db}
+              onClick={() => setSelectedDBSchema(db)}
+              style={{
+                ...styles.selectButton,
+                backgroundColor:
+                  selectedDBSchema === db ? "#0096FF" : "#f4f4f4",
+              }}
+            >
+              {db}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* API Response */}
+      <div style={styles.codeContainer}>
+        {apiResponse.success && (
+          <div>
+            <h3>Generated API Code:</h3>
+            <pre style={styles.codeBlock}>{apiResponse.code}</pre>
+          </div>
+        )}
+      </div>
+
+      {/* Columns Configuration */}
       <div style={styles.formContainer}>
         {columns.map((col) => (
           <div key={col.id} style={styles.columnRow}>
@@ -141,10 +277,16 @@ function DataSetBuilder({ project }) {
             min="1"
           />
         </div>
-        <button onClick={handleGenerateAPI} style={styles.generateButton}>
-          🚀 Generate API
+        <button
+          onClick={handleGenerateAPI}
+          style={styles.generateButton}
+          disabled={!selectedLanguage || !selectedDBSchema || isGenerating}
+        >
+          {isGenerating ? "Generating..." : "🚀 Generate API"}
         </button>
       </div>
+
+      {/* Live Table Preview */}
       <div style={styles.tableContainer}>
         <h2 style={styles.tableHeader}>Live Table Preview</h2>
         <div style={styles.tableWrapper}>
@@ -172,6 +314,7 @@ function DataSetBuilder({ project }) {
           </table>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
@@ -187,6 +330,47 @@ const styles = {
     boxShadow: "0 6px 16px rgba(0, 0, 0, 0.12)",
     border: "1px solid #f3f4f6",
   },
+  description: {
+    textAlign: "left",
+    fontSize: "16px",
+    color: "#666",
+    marginBottom: "30px",
+  },
+  toolbar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+    padding: "10px",
+    backgroundColor: "#f8f9fa",
+    borderRadius: "5px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+  },
+  promptInput: {
+    flex: 1,
+    padding: "10px",
+    marginRight: "10px",
+    borderRadius: "5px",
+    border: "1px solid #ddd",
+    fontSize: "16px",
+  },
+  promptButton: {
+    padding: "10px 20px",
+    backgroundColor: "#007bff",
+    color: "white",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  chatResponse: {
+    marginTop: "20px",
+    padding: "15px",
+    backgroundColor: "#e9f7df",
+    borderRadius: "5px",
+    border: "1px solid #c3e6cb",
+    color: "#155724",
+  },
   header: {
     textAlign: "left",
     fontSize: "32px",
@@ -194,125 +378,91 @@ const styles = {
     color: "#333",
     marginBottom: "15px",
   },
-  description: {
-    textAlign: "left",
-    fontSize: "16px",
-    color: "#666",
-    marginBottom: "30px",
+
+  selectionContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    margin: "20px 0",
   },
-  formContainer: {
+  buttonGroup: {
     display: "flex",
     flexDirection: "column",
-    gap: "15px",
-    backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "12px",
-    boxShadow: "0 3px 6px rgba(0, 0, 0, 0.1)",
-  },
-  columnRow: {
-    display: "flex",
     alignItems: "center",
-    gap: "15px",
   },
-  input: {
-    flex: "2",
-    padding: "10px",
-    borderRadius: "6px",
+  sectionHeader: { fontSize: "18px", marginBottom: "10px" },
+  selectButton: {
+    padding: "10px 20px",
+    margin: "5px",
+    borderRadius: "5px",
     border: "1px solid #ddd",
-    fontSize: "14px",
+    cursor: "pointer",
+  },
+  formContainer: { marginTop: "20px" },
+  columnRow: { display: "flex", alignItems: "center", marginBottom: "10px" },
+  input: {
+    marginRight: "10px",
+    padding: "5px",
+    borderRadius: "5px",
+    border: "1px solid #ddd",
   },
   select: {
-    flex: "1",
-    padding: "10px",
-    borderRadius: "6px",
+    padding: "5px",
+    marginRight: "10px",
+    borderRadius: "5px",
     border: "1px solid #ddd",
-    fontSize: "14px",
-    backgroundColor: "#f9f9f9",
   },
   removeButton: {
-    padding: "10px",
-    backgroundColor: "#e63946",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
+    color: "#ff4d4f",
     cursor: "pointer",
-    fontSize: "14px",
-    transition: "background-color 0.3s",
+    background: "none",
+    border: "none",
   },
   addButton: {
-    padding: "12px",
-    backgroundColor: "#0096FF",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
+    padding: "10px 20px",
+    marginTop: "10px",
+    borderRadius: "5px",
+    backgroundColor: "#27ae60",
+    color: "white",
     cursor: "pointer",
-    fontSize: "16px",
-    transition: "transform 0.2s",
-  },
-  rowControl: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    marginTop: "20px",
-  },
-  label: {
-    fontSize: "15px",
-    fontWeight: "500",
-    color: "#333",
-  },
-  numberInput: {
-    width: "80px",
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #ddd",
-    fontSize: "14px",
   },
   generateButton: {
-    padding: "14px",
-    backgroundColor: "#27ae60",
-    color: "#fff",
-    border: "none",
-    borderRadius: "10px",
+    padding: "10px 20px",
+    marginTop: "20px",
+    borderRadius: "5px",
+    backgroundColor: "#007bff",
+    color: "white",
     cursor: "pointer",
-    fontSize: "16px",
-    transition: "background-color 0.3s, transform 0.2s",
+    width: "100%",
   },
-  tableContainer: {
+  tableContainer: { marginTop: "30px" },
+  tableWrapper: { overflowX: "auto" },
+  table: { width: "100%", borderCollapse: "collapse" },
+  tableHeader: { textAlign: "center", fontSize: "20px", marginBottom: "10px" },
+  tableHeaderCell: {
+    padding: "10px",
+    textAlign: "left",
+    backgroundColor: "#f4f4f4",
+    borderBottom: "2px solid #ddd",
+  },
+  tableCell: { padding: "10px", borderBottom: "1px solid #ddd" },
+  rowHover: { backgroundColor: "white" },
+
+  // New code styles added
+  codeContainer: {
     marginTop: "30px",
     padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "12px",
-    boxShadow: "0 3px 6px rgba(0, 0, 0, 0.08)",
+    backgroundColor: "#f4f4f4",
+    borderRadius: "5px",
   },
-  tableHeader: {
-    textAlign: "center",
-    fontSize: "20px",
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: "10px",
-  },
-  tableWrapper: {
-    overflowX: "auto",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    marginTop: "10px",
-  },
-  tableHeaderCell: {
-    padding: "12px",
-    textAlign: "left",
-    fontWeight: "600",
-    backgroundColor: "#f3f4f6",
-    borderBottom: "1px solid #ddd",
-  },
-  tableCell: {
+  codeBlock: {
+    whiteSpace: "pre-wrap", // Allows code to wrap within the block
+    wordBreak: "break-word",
+    backgroundColor: "#333",
+    color: "#fff",
     padding: "10px",
-    borderBottom: "1px solid #eee",
-  },
-  rowHover: {
-    transition: "background-color 0.2s",
-    cursor: "pointer",
+    borderRadius: "5px",
+    maxHeight: "400px",
+    overflowY: "scroll", // Enables scrolling if content overflows
   },
 };
 

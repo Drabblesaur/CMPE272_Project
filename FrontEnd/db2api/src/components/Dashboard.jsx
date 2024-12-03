@@ -1,14 +1,5 @@
 "use client";
-import {
-  Boxes,
-  Pencil,
-  ShoppingCart,
-  CheckSquare,
-  Frame,
-  PieChart,
-  Map,
-  MessageSquareCode,
-} from "lucide-react";
+import { Boxes } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -27,16 +18,20 @@ import { UserProjects } from "@/components/UserProjects";
 import { Header } from "./Header";
 import { NewProjectDialog } from "./NewProjectDialog";
 import ProjectContainer from "./ProjectContainer";
-import ErrorAlert from "./alert";
-import Link from "next/link";
+import { Toaster } from "./ui/toaster";
+import { useToast } from "@/hooks/use-toast";
 
 const EmptyData = {
   data: [
     {
       user: {
-        id: 0,
-        name: "User",
-        email: "email.com",
+        _id: "12345",
+        githubID: "2",
+        profileData: {
+          name: "John Doe",
+          email: "john.doe@example.com",
+          avatar_url: "https://example.com/avatar.jpg",
+        },
       },
       userProjects: [],
     },
@@ -48,11 +43,16 @@ export default function Dashboard() {
   const [userData, setUserData] = React.useState(EmptyData);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const { toast } = useToast();
+  //Delete this line and replace with actual user ID
+  const userID = "6743494edd70ab7be0b538f3";
 
   // API call to get user data
   const getUserData = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8080/db/userData/2");
+      const response = await fetch(
+        "http://127.0.0.1:8080/db/userData/6743494edd70ab7be0b538f3"
+      );
       const data = await response.json();
       console.log(data);
       setUserData(data);
@@ -62,7 +62,11 @@ export default function Dashboard() {
       console.error("Error fetching data:", error);
       setUserData(EmptyData);
       setLoading(false);
-      setError(<ErrorAlert description="Error fetching data" />);
+      toast({
+        variant: "destructive",
+        title: "Error fetching data",
+        description: "Please try again later",
+      });
     }
   };
 
@@ -81,10 +85,19 @@ export default function Dashboard() {
         },
       ],
     }));
+    toast({
+      title: "Project created successfully",
+      description: "Project has been created successfully.",
+    });
   };
   const handleDelete = (projectId) => {
     //console.log("Delete project with id: " + projectId);
     //console.log(selectedProject._id);
+    toast({
+      variant: "destructive",
+      title: "Project deleted successfully",
+      description: "Project has been deleted successfully.",
+    });
     if (selectedProject._id === projectId) {
       setSelectedProject(null);
     }
@@ -127,16 +140,6 @@ export default function Dashboard() {
         </SidebarHeader>
 
         <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <Link href="/chat">
-                <SidebarMenuButton>
-                  <MessageSquareCode />
-                  <span>Chat</span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-          </SidebarMenu>
           <SidebarRail />
           {userData.data && userData.data.length > 0 && (
             <UserProjects
@@ -163,7 +166,7 @@ export default function Dashboard() {
           <ProjectContainer project={selectedProject} />
         ) : null}
 
-        {error}
+        <Toaster />
         {userData.data && userData.data.length > 0 && (
           <NewProjectDialog
             user={userData.data[0].user}

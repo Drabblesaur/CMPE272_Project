@@ -23,11 +23,11 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
- // Register CORS
- app.register(cors, {
-    origin: '*', // Allow all origins
-  });
-  
+// Register CORS
+app.register(cors, {
+  origin: "*", // Allow all origins
+});
+
 // Register GitHub OAuth plugin
 app.register(oauth2, {
   name: "githubOAuth",
@@ -61,6 +61,39 @@ app.get("/auth/callback", async (req, reply) => {
       message: "GitHub authentication failed.",
     });
   }
+});
+
+app.post("/signup", async (req, res) => {
+  // Validate the request body
+  const { error } = validate(req.body);
+  if (error)
+    return res
+      .status(400)
+      .send({ success: false, message: error.details[0].message });
+
+  // Check if the user already exists
+  let user = await User.findOne({ email: req.body.email });
+  if (user)
+    return res
+      .status(400)
+      .send({ success: false, message: "User already registered." });
+
+  // Create a new user
+  user = new User({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    password: req.body.password,
+  });
+
+  // Save the user to the database
+  await user.save();
+
+  // Generate an auth token
+  const token = user.generateAuthToken();
+
+  // Return the token
+  res.send({ success: true, token });
 });
 
 // register ai controller

@@ -65,28 +65,32 @@ const userDataController = (fastify, options, done) => {
     }
   );
 
-  // Get user data by githubID
+  // Get user data by _id
   fastify.get(
-    "/userData/:githubID",
+    "/userData/:id",
     { schema: responseSchema },
     async (request, reply) => {
-      const { githubID } = request.params; // Extract 'githubID' from params
-      console.log(githubID);
+      const { id } = request.params; // Extract 'id' from params
+      console.log(id);
       try {
-        const userData = await userDataModel.findOne({ githubID }); // Query by 'githubID'
+        const userData = await userDataModel.findById(id); // Query by '_id'
         if (!userData) {
           return reply.status(404).send({ message: "User data not found" });
         }
 
         // Query for projects associated with the user
-        const userProjects = await Project.find({ githubID });
+        const userProjects = await Project.find({ userID: id });
 
-        // Return the githubID along with the user data and projects
+        // Return the _id along with the user data and projects
         return reply.send({
           message: "User data retrieved successfully",
           data: [
             {
-              user: userData.profileData,
+              user: {
+                _id: userData._id,
+                githubID: userData.githubID,
+                profileData: userData.profileData,
+              },
               projects: userData.data,
               userProjects: userProjects,
             },
@@ -101,9 +105,40 @@ const userDataController = (fastify, options, done) => {
     }
   );
 
+  // Get user data by githubID
+  fastify.get(
+    "/userDataGHub/:githubID",
+    { schema: responseSchema },
+    async (request, reply) => {
+      const { githubID } = request.params; // Extract the githubID from the URL parameters
+
+      try {
+        // Find the user data by githubID
+        const userData = await userDataModel.findOne({ githubID });
+
+        // If no user data is found, return a 404 status
+        if (!userData) {
+          return reply.status(404).send({ message: "User data not found" });
+        }
+
+        // Return the user data
+        return reply.send({
+          message: "User data retrieved successfully",
+          data: userData,
+        });
+      } catch (error) {
+        // Handle any errors that occur during the retrieval
+        return reply.status(500).send({
+          message: "Error retrieving user data",
+          error: error.message,
+        });
+      }
+    }
+  );
+
   // Update only the data part of the user data by githubID
   fastify.put(
-    "/addUserData/:githubID",
+    "/addUserDataGHub/:githubID",
     { schema: responseSchema },
     async (request, reply) => {
       const { githubID } = request.params; // Extract the githubID from the URL parameters

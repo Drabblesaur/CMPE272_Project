@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
-  githubID: {
-    type: Number,
+  userID: {
+    type: mongoose.Types.ObjectId,
     required: true,
   },
   name: {

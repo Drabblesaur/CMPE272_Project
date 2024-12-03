@@ -20,10 +20,10 @@ const projectController = (fastify, options, done) => {
     "/project",
     { schema: responseSchema },
     async (request, reply) => {
-      const { githubID, name, schema, code } = request.body;
+      const { userID, name, schema, code } = request.body;
       try {
         const newProject = new Project({
-          githubID,
+          userID,
           name,
           schema,
           code,
@@ -78,12 +78,12 @@ const projectController = (fastify, options, done) => {
 
   // Get all projects for a user
   fastify.get(
-    "/projects/:githubID",
+    "/projects/:userID",
     { schema: responseSchema },
     async (request, reply) => {
-      const { githubID } = request.params;
+      const { ObjectID } = request.params;
       try {
-        const projects = await Project.find({ githubID });
+        const projects = await Project.find({ ObjectID });
         return reply.send({
           message: "Projects retrieved successfully!",
           data: projects,
@@ -95,6 +95,58 @@ const projectController = (fastify, options, done) => {
       }
     }
   );
+
+  // Update Project code
+  fastify.put(
+    "/project/:id",
+    { schema: responseSchema },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { code } = request.body;
+      try {
+        const updatedProject = await Project.findByIdAndUpdate(
+          id,
+          { code },
+          { new: true }
+        );
+        if (!updatedProject) {
+          return reply.status(404).send({ message: "Project not found" });
+        }
+        reply.send({
+          message: "Project code updated successfully",
+          data: [updatedProject],
+        });
+      } catch (error) {
+        reply
+          .status(500)
+          .send({ message: "Error updating project code", error });
+      }
+    }
+  );
+
+  // Update Project schema
+  fastify.put("/project/:id/schema", async (request, reply) => {
+    const { id } = request.params;
+    const { schema } = request.body;
+    try {
+      const updatedProject = await Project.findByIdAndUpdate(
+        id,
+        { schema },
+        { new: true }
+      );
+      if (!updatedProject) {
+        return reply.status(404).send({ message: "Project not found" });
+      }
+      reply.send({
+        message: "Project schema updated successfully",
+        data: [updatedProject],
+      });
+    } catch (error) {
+      reply
+        .status(500)
+        .send({ message: "Error updating project schema", error });
+    }
+  });
 
   done();
 };
