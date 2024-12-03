@@ -37,6 +37,12 @@ export function SignupForm() {
       return;
     }
 
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -52,6 +58,33 @@ export function SignupForm() {
       setLoading(false);
     }
   };
+
+  function validatePassword(password) {
+    const minLength = 8;
+    const maxLength = 26;
+    const lowerCase = /[a-z]/;
+    const upperCase = /[A-Z]/;
+    const numeric = /[0-9]/;
+    const symbol = /[!@#$%^&*(),.?":{}|<>]/;
+
+    if (password.length < minLength || password.length > maxLength) {
+      return `Password must be between ${minLength} and ${maxLength} characters long.`;
+    }
+    if (!lowerCase.test(password)) {
+      return "Password must contain at least one lowercase letter.";
+    }
+    if (!upperCase.test(password)) {
+      return "Password must contain at least one uppercase letter.";
+    }
+    if (!numeric.test(password)) {
+      return "Password must contain at least one number.";
+    }
+    if (!symbol.test(password)) {
+      return "Password must contain at least one special character.";
+    }
+
+    return null;
+  }
 
   return (
     <Card className="mx-auto max-w-sm">

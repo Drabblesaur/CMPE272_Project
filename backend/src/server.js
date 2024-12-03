@@ -6,11 +6,13 @@ import oauth2 from "@fastify/oauth2";
 import dbController from "./dbcontroller.js";
 import projectController from "./prjcontroller.js";
 import mongoose from "mongoose";
+import { User, validate } from "./models/user.js";
+import UserData from "./models/userData.js";
 
 dotenv.config();
 
 const app = fastify({ logger: true }); // Creating a Fastify instance
-const httpsApp = fastify({ logger: true }); 
+const httpsApp = fastify({ logger: true });
 
 // Connect to MongoDB
 mongoose
@@ -31,7 +33,7 @@ app.register(cors, {
 
 httpsApp.register(cors, {
   origin: "*", // Allow all origins
-})
+});
 
 // Register GitHub OAuth plugin
 app.register(oauth2, {
@@ -104,14 +106,29 @@ app.post("/signup", async (req, res) => {
     password: req.body.password,
   });
 
-  // Save the user to the database
+  // Save the user
   await user.save();
 
-  // Generate an auth token
-  const token = user.generateAuthToken();
+  const fullName = `${user.firstName} ${user.lastName}`;
+  // Create a new UserData document
+  const userData = new UserData({
+    user: user._id,
+    githubID: req.body.githubID || null,
+    accessToken: req.body.accessToken || null,
+    refreshToken: req.body.refreshToken || null,
+    profileData: {
+      name: fullName,
+      email: req.body.email || "john.doe@example.com",
+      avatar_url: "https://example.com/avatar.jpg",
+    },
+    data: req.body.data || [],
+  });
 
-  // Return the token
-  res.send({ success: true, token });
+  // Save the UserData document
+  await userData.save();
+
+  // Send a success response
+  res.send({ success: true, message: "User registered successfully." });
 });
 
 // register ai controller
@@ -126,7 +143,7 @@ const start = async () => {
   try {
     await app.listen({ port: 8080 });
     app.log.info(`server listening on ${app.server.address().port}`);
-    await httpsApp.listen({ port: 80, host: '0.0.0.0'});
+    await httpsApp.listen({ port: 80, host: "0.0.0.0" });
     httpsApp.log.info(`server listening on ${httpsApp.server.address().port}`);
   } catch (err) {
     app.log.error(err);
