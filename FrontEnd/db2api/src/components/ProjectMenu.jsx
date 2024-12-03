@@ -39,7 +39,7 @@ export const ProjectMenu = ({ projectId, onDelete }) => {
       //alert("Delete project with id: " + projectId);
       //onDelete(projectId);
     } catch (err) {
-      setError(err.message);
+      console.error(err);
     } finally {
       setIsLoading(false);
     }

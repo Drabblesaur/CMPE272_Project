@@ -15,14 +15,11 @@ export const UserProjects = ({
   setSelectedProject,
   handleDelete,
 }) => {
-  const [projectList, setProjectList] = useState(projects);
-
   const handleLocalDelete = (projectId) => {
-    setProjectList((prevProjects) =>
-      prevProjects.filter((project) => project._id !== projectId)
-    );
     handleDelete(projectId);
   };
+
+  //console.log("UserProjects", projects);
 
   return (
     <SidebarGroup>
@@ -38,7 +35,7 @@ export const UserProjects = ({
             <span>New Blank Project</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
-        {projectList.map((project) => (
+        {projects.map((project) => (
           <SidebarMenuItem key={project._id}>
             <SidebarMenuButton
               asChild

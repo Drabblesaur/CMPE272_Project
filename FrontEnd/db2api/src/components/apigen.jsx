@@ -8,7 +8,7 @@ const dataTypes = ["String", "Number", "Date", "Location", "Boolean", "Array"];
 const languages = ["Java", "JavaScript", "Python"];
 const dbSchemas = ["SQL", "MongoDB", "PostgreSQL"];
 
-function DataSetBuilder({ project }) {
+function DataSetBuilder({ project, updateSchema, updateCode }) {
   const [columns, setColumns] = useState([
     { id: 1, title: "Column 1", type: "String" },
   ]);
@@ -147,6 +147,11 @@ function DataSetBuilder({ project }) {
         updateProjectCode(responseData.code);
         // Save the schema to the project
         updateProjectSchema(schema);
+
+        // Update the schema in the parent component
+        updateSchema(schema);
+        // Update the code in the parent component
+        updateCode(responseData.code);
 
         // Optionally, you can also display the success checkpoints or any other data.
         console.log("API Response:", responseData);

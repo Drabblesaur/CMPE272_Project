@@ -75,16 +75,20 @@ export default function Dashboard() {
   }, []);
 
   const handleProjectCreated = (newProject) => {
-    console.log("new project", newProject);
-    setUserData((prevData) => ({
+    console.log("new project", newProject.data[0]);
+    const prevData = userData;
+    const updatedData = {
       ...prevData,
       data: [
         {
           ...prevData.data[0],
-          userProjects: [...prevData.data[0].userProjects, newProject],
+          userProjects: [...prevData.data[0].userProjects, newProject.data[0]],
         },
       ],
-    }));
+    };
+
+    console.log("updatedData", updatedData);
+    setUserData(updatedData);
     toast({
       title: "Project created successfully",
       description: "Project has been created successfully.",
@@ -98,7 +102,7 @@ export default function Dashboard() {
       title: "Project deleted successfully",
       description: "Project has been deleted successfully.",
     });
-    if (selectedProject._id === projectId) {
+    if (selectedProject === null || selectedProject._id === projectId) {
       setSelectedProject(null);
     }
     setUserData((prevData) => ({
@@ -107,11 +111,31 @@ export default function Dashboard() {
         {
           ...prevData.data[0],
           userProjects: prevData.data[0].userProjects.filter(
-            (project) => project.id !== projectId
+            (project) => project._id !== projectId
           ),
         },
       ],
     }));
+  };
+
+  const updateSchema = (newSchema) => {
+    // get selected project
+    const project = selectedProject;
+    // update schema for selected project
+    project.schema = newSchema;
+    // update selected project
+    setSelectedProject(project);
+    console.log(selectedProject);
+  };
+
+  const updateCode = (newCode) => {
+    // get selected project
+    const project = selectedProject;
+    // update code for selected project
+    project.code = newCode;
+    // update selected project
+    setSelectedProject(project);
+    console.log(selectedProject);
   };
 
   if (loading) {
@@ -163,7 +187,11 @@ export default function Dashboard() {
         <Header selectedProject={selectedProject} />
         {/* Show DataSetBuilder when a project is selected*/}
         {selectedProject ? (
-          <ProjectContainer project={selectedProject} />
+          <ProjectContainer
+            project={selectedProject}
+            updateSchema={updateSchema}
+            updateCode={updateCode}
+          />
         ) : null}
 
         <Toaster />
