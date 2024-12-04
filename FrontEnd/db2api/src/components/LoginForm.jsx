@@ -109,7 +109,7 @@ export function LoginForm() {
             className="w-full"
             onClick={() => {
               window.location.href =
-                "https://backend.codegenner.net/auth/callback";
+                "https://backend.codegenner.net/auth/login";
             }}
           >
             Login with Github
