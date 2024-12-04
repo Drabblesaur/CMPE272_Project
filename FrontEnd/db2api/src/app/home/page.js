@@ -15,7 +15,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!router.isReady) return; // Ensure the router is ready
-
+console.log(token)
     if (token) {
       console.log("1");
       localStorage.setItem("userID", token);
@@ -33,6 +33,15 @@ export default function Home() {
       }
     }
   }, [token, router]);
+
+  // useEffect(() => {
+  //   const storedUserId = localStorage.getItem("userID");
+  //   if (!storedUserId) {
+  //     router.push("/auth");
+  //   } else {
+  //     setUserId(storedUserId);
+  //   }
+  // }, [router]);
 
   if (!userId) {
     return <p>Loading...</p>;
