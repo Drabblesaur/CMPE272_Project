@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Dashboard from "@/components/Dashboard";
 
 export default function Home() {
-  console.log("Hello")
+  console.log("Checkin")
   const router = useRouter();
   const { token: queryToken } = router.query;
   const pathToken = typeof window !== "undefined" ? window.location.pathname.split("/").pop() : null;
