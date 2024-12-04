@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import oauth2 from "@fastify/oauth2";
 import dbController from "./dbcontroller.js";
 import projectController from "./prjcontroller.js";
+import oauthController from "./oauthcontroller.js";
 import mongoose from "mongoose";
 // import { User, validate } from "./models/user.js";
 // import UserData from "./models/userData.js";
@@ -64,36 +65,19 @@ httpsApp.register(oauth2, {
   callbackUri: process.env.GITHUB_REDIRECT_URI,
 });
 
-// Endpoint to handle GitHub OAuth callback
-app.get("/auth/callback", async (req, reply) => {
-  const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(
-    req
-  );
-  console.log(token);
-  if (token) {
-    // return reply.send({
-    //     success: true,
-    //     token,
-    //     message: 'GitHub authentication successful!'
-    // });
-    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/token=${token}`);
-  } else {
-    return reply.status(400).send({
-      success: false,
-      message: "GitHub authentication failed.",
-    });
-  }
-});
 
 // register ai controller
 app.register(aiController, { prefix: "/ai" });
 app.register(dbController, { prefix: "/db" });
 app.register(projectController, { prefix: "/prj" });
 app.register(loginController, { prefix: "/login" });
+app.register(oauthController, { prefix: "/auth" })
 httpsApp.register(aiController, { prefix: "/ai" });
 httpsApp.register(dbController, { prefix: "/db" });
 httpsApp.register(projectController, { prefix: "/prj" });
 httpsApp.register(loginController, { prefix: "/login" });
+httpsApp.register(oauthController, { prefix: "/auth" })
+
 
 const start = async () => {
   try {
