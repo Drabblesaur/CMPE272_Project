@@ -11,16 +11,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button"; // Assuming you have this component
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function SignupForm() {
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   const handleChange = (e) => {
     setFormData({
@@ -29,17 +32,17 @@ export function SignupForm() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     const passwordError = validatePassword(formData.password);
     if (passwordError) {
       setError(passwordError);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
       return;
     }
 
@@ -48,9 +51,24 @@ export function SignupForm() {
 
     try {
       const { confirmPassword, ...submitData } = formData;
-      // API call to sign up the user
-      // for now just log the data
-      console.log(submitData);
+
+      const response = await fetch("http://127.0.0.1:8080/login/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submitData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Something went wrong");
+      }
+
+      localStorage.setItem("userID", result.userId);
+      router.push("/home");
+
       alert("User signed up successfully");
     } catch (err) {
       setError(err.message);
@@ -97,11 +115,22 @@ export function SignupForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="firstName">Name</Label>
             <Input
-              id="name"
+              id="firstName"
               type="text"
-              placeholder="John Doe"
+              placeholder="John"
+              required
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="lastName">Name</Label>
+            <Input
+              id="lastName"
+              type="text"
+              placeholder="Doe"
               required
               value={formData.name}
               onChange={handleChange}

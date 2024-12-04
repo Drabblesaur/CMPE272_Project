@@ -27,8 +27,7 @@ import { useRouter } from "next/navigation";
 export const UserProfileMenu = ({ user }) => {
   const router = useRouter();
   const handleLogout = () => {
-    // Perform logout logic here, e.g., clearing tokens, calling API, etc.
-    // For now, redirect to the login page
+    localStorage.removeItem("userID");
     router.push("/");
   };
   return (

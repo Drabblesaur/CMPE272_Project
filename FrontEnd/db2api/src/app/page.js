@@ -10,25 +10,24 @@ export default function Home() {
           Welcome to <span className="text-gray-300">DB2 API</span>
         </h1>
         <p className="text-lg text-gray-400">
-          Generate CRUD operations effortlessly by providing your database schema.
+          Generate CRUD operations effortlessly by providing your database
+          schema.
         </p>
       </header>
 
       {/* Action Section */}
       <div className="space-y-6 w-80">
-        <Button asChild className="w-full py-3 text-lg bg-gray-800 text-gray-100 hover:bg-gray-700 transition-all">
-          <Link href="/auth">Login</Link>
-        </Button>
-        <Button asChild className="w-full py-3 text-lg bg-gray-800 text-gray-100 hover:bg-gray-700 transition-all">
-          <Link href="/signup">Sign Up</Link>
-        </Button>
-
-        {/* Temporary Button */}
         <Button
           asChild
-          className="w-full py-3 bg-red-600 hover:bg-red-700 text-white transition-all"
+          className="w-full py-3 text-lg bg-gray-800 text-gray-100 hover:bg-gray-700 transition-all"
         >
-          <Link href="/home">Dashboard</Link>
+          <Link href="/auth">Login</Link>
+        </Button>
+        <Button
+          asChild
+          className="w-full py-3 text-lg bg-gray-800 text-gray-100 hover:bg-gray-700 transition-all"
+        >
+          <Link href="/signup">Sign Up</Link>
         </Button>
       </div>
 
@@ -49,9 +48,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="absolute bottom-6 text-xs text-gray-500">
-        <p>
-          © {new Date().getFullYear()} DB2 API. All rights reserved.
-        </p>
+        <p>© {new Date().getFullYear()} DB2 API. All rights reserved.</p>
       </footer>
     </div>
   );

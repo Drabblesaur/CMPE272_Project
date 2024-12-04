@@ -38,20 +38,19 @@ const EmptyData = {
   ],
 };
 
-export default function Dashboard() {
+export default function Dashboard({ userId }) {
   const [selectedProject, setSelectedProject] = React.useState(null);
   const [userData, setUserData] = React.useState(EmptyData);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const { toast } = useToast();
   //Delete this line and replace with actual user ID
-  const userID = "6743494edd70ab7be0b538f3";
 
   // API call to get user data
   const getUserData = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8080/db/userData/6743494edd70ab7be0b538f3"
+        `http://127.0.0.1:8080/db/userData/${userId}`
       );
       const data = await response.json();
       console.log(data);
