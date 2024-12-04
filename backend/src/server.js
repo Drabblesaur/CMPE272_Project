@@ -61,23 +61,21 @@ httpsApp.register(oauth2, {
     },
     auth: oauth2.GITHUB_CONFIGURATION,
   },
-  startRedirectPath: "/auth/login",
+  startRedirectPath: "/auth/signup",
   callbackUri: process.env.GITHUB_REDIRECT_URI,
 });
-
 
 // register ai controller
 app.register(aiController, { prefix: "/ai" });
 app.register(dbController, { prefix: "/db" });
 app.register(projectController, { prefix: "/prj" });
 app.register(loginController, { prefix: "/login" });
-app.register(oauthController, { prefix: "/auth" })
+app.register(oauthController, { prefix: "/auth" });
 httpsApp.register(aiController, { prefix: "/ai" });
 httpsApp.register(dbController, { prefix: "/db" });
 httpsApp.register(projectController, { prefix: "/prj" });
 httpsApp.register(loginController, { prefix: "/login" });
-httpsApp.register(oauthController, { prefix: "/auth" })
-
+httpsApp.register(oauthController, { prefix: "/auth" });
 
 const start = async () => {
   try {

@@ -78,7 +78,7 @@ function DataSetBuilder({ project, updateSchema, updateCode }) {
   };
 
   const updateProjectCode = async (newCode) => {
-    const projectUrl = `http://127.0.0.1:8080/prj/project/${project._id}`;
+    const projectUrl = `https://backend.codegenner.net/prj/project/${project._id}`;
     const response = await fetch(projectUrl, {
       method: "PUT",
       headers: {
