@@ -67,7 +67,6 @@ export const UserProfileMenu = ({ user }) => {
                   <span className="truncate text-xs">
                     {user.profileData.email}
                   </span>
-                  <span className="truncate text-xs">{user._id}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

@@ -187,8 +187,6 @@ function DataSetBuilder({ project, updateSchema, updateCode }) {
         Customize your dataset, choose a programming language, and select a
         database schema. It will generate CRUD API code for your dataset.
       </p>
-      <p> {project._id}</p>
-
       {/* Language and DB Schema Selection */}
       <div style={styles.selectionContainer}>
         <div>

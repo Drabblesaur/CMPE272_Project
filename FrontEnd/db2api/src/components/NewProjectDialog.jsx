@@ -31,7 +31,6 @@ export const NewProjectDialog = ({ user, onProjectCreated }) => {
   return (
     <dialog id="new-project-form" className="p-4 rounded-lg shadow-lg">
       <h2 className="text-lg font-semibold mb-4">Create New Project</h2>
-      <p>Creates for {user._id}</p>
       <form method="dialog" className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <label
