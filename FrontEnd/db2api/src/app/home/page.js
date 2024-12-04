@@ -1,29 +1,26 @@
 "use client";
 
-import { useRouter } from "next/router";
+import { useRouter,useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Dashboard from "@/components/Dashboard";
 
 export default function Home() {
   console.log("Checkin")
   const router = useRouter();
-  const { token: queryToken } = router.query;
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+  console.log(token);
   const pathToken = typeof window !== "undefined" ? window.location.pathname.split("/").pop() : null;
 
-  const token = queryToken || pathToken;
 
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    // if (!router.isReady) return; // Ensure the router is ready
 console.log(token)
     if (token) {
       console.log("1");
       localStorage.setItem("userID", token);
       setUserId(token);
-      setTimeout(() => {
-        router.replace("/dashboard");
-      }, 0);
     } else {
       console.log("2");
       const storedUserId = localStorage.getItem("userID");

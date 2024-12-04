@@ -86,9 +86,11 @@ app.get("/auth/callback", async (req, reply) => {
     console.log(token);
 
     if (token && token.token && token.token.access_token) {
+
       console.log("Access Token:", token.token.access_token);
-       reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(token.token.access_token)}`);
-      // reply.redirect("http://localhost:3000")
+      console.log(`https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(token.token.access_token)}`)
+      reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(token.token.access_token)}`);
+      // reply.redirect("https://earnest-buttercream-edca31.netlify.app")
     } else {
       console.error("Failed to retrieve token:", token);
       reply.status(400).send({
@@ -114,7 +116,7 @@ httpsApp.get("/auth/callback", async (req, reply) => {
     if (token && token.token && token.token.access_token)  {
       console.log("Access Token:", token.token.access_token);
         reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(token.token.access_token)}`);
-      //  reply.redirect("http://localhost:3000")
+      //  reply.redirect("https://earnest-buttercream-edca31.netlify.app")
     } else {
       console.error("Failed to retrieve token:", token);
       reply.status(400).send({
