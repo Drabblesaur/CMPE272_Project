@@ -71,12 +71,12 @@ app.register(aiController, { prefix: "/ai" });
 app.register(dbController, { prefix: "/db" });
 app.register(projectController, { prefix: "/prj" });
 app.register(loginController, { prefix: "/login" });
-app.register(oauthController, { prefix: "/auth" })
+//app.register(oauthController, { prefix: "/auth" })
 httpsApp.register(aiController, { prefix: "/ai" });
 httpsApp.register(dbController, { prefix: "/db" });
 httpsApp.register(projectController, { prefix: "/prj" });
 httpsApp.register(loginController, { prefix: "/login" });
-httpsApp.register(oauthController, { prefix: "/auth" })
+//httpsApp.register(oauthController, { prefix: "/auth" })
 
 // Endpoint to handle GitHub OAuth callback
 app.get("/auth/callback", async (req, reply) => {
