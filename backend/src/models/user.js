@@ -2,6 +2,14 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import Joi from "joi";
 import passwordComplexity from "joi-password-complexity";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("FATAL ERROR: JWT_SECRET is not defined.");
+}
 
 const UserSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -26,7 +34,8 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, "jwt_token", { expiresIn: "7d" });
+  // Use the secret from the .env file
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
   return token;
 };
 
@@ -43,5 +52,6 @@ const validate = (data) => {
 };
 
 export { User, validate };
+
 
 // module.exports = mongoose.model("users", UserSchema);
