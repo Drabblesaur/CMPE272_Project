@@ -90,7 +90,7 @@ app.get("/auth/callback", async (req, reply) => {
     //     token,
     //     message: 'GitHub authentication successful!'
     // });
-    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/token=${token}`);
+    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/${token}`);
   } else {
     return reply.status(400).send({
       success: false,
