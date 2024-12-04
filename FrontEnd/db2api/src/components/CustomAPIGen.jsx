@@ -40,7 +40,7 @@ export default function CustomAPIGen({ project }) {
     });
     try {
       setIsGenerating(true);
-      const apiUrl = `http://127.0.0.1:8080/ai/generateCustom?schema=${encodeURIComponent(
+      const apiUrl = `https://backend.codegenner.net/ai/generateCustom?schema=${encodeURIComponent(
         schema
       )}&language=${encodeURIComponent(
         pLanguage

@@ -19,7 +19,7 @@ export const ProjectMenu = ({ projectId, onDelete }) => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8080/prj/project/${projectId}`,
+        `https://backend.codegenner.net/prj/project/${projectId}`,
         {
           method: "DELETE",
         }

@@ -52,13 +52,16 @@ export function SignupForm() {
     try {
       const { confirmPassword, ...submitData } = formData;
 
-      const response = await fetch("http://127.0.0.1:8080/login/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submitData),
-      });
+      const response = await fetch(
+        "https://backend.codegenner.net/login/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(submitData),
+        }
+      );
 
       const result = await response.json();
 

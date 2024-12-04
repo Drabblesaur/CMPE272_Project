@@ -50,7 +50,7 @@ export default function Dashboard({ userId }) {
   const getUserData = async () => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8080/db/userData/${userId}`
+        `https://backend.codegenner.net/db/userData/${userId}`
       );
       const data = await response.json();
       console.log(data);
