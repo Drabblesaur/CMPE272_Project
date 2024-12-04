@@ -80,31 +80,53 @@ httpsApp.register(loginController, { prefix: "/login" });
 
 // Endpoint to handle GitHub OAuth callback
 app.get("/auth/callback", async (req, reply) => {
-  const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
-  console.log(token); // Check the structure of the token object here
+  console.log("Callback URI:", process.env.GITHUB_REDIRECT_URI);
+  try {
+    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
+    console.log(token);
 
-  if (token ) {
-    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/token=${token}`);
-
-  } else {
-    return reply.status(400).send({
+    if (token && token.token && token.token.access_token) {
+      console.log("Access Token:", token.token.access_token);
+       reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(token.access_token)}`);
+      // reply.redirect("http://localhost:3000")
+    } else {
+      console.error("Failed to retrieve token:", token);
+      reply.status(400).send({
+        success: false,
+        message: "GitHub authentication failed.",
+      });
+    }
+  } catch (error) {
+    console.error("Error in GitHub OAuth flow:", error);
+    reply.status(500).send({
       success: false,
-      message: "GitHub authentication failed.",
+      message: "Internal Server Error during authentication.",
     });
   }
 });
 
 httpsApp.get("/auth/callback", async (req, reply) => {
-  const token = await httpsApp.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
-  console.log(token); // Check the structure of the token object here
+  console.log("Callback URI:", process.env.GITHUB_REDIRECT_URI);
+  try {
+    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
+    console.log(token);
 
-  if (token) {
-    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/token=${token}`);
-
-  } else {
-    return reply.status(400).send({
+    if (token && token.token && token.token.access_token)  {
+      console.log("Access Token:", token.token.access_token);
+        reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(token.access_token)}`);
+      //  reply.redirect("http://localhost:3000")
+    } else {
+      console.error("Failed to retrieve token:", token);
+      reply.status(400).send({
+        success: false,
+        message: "GitHub authentication failed.",
+      });
+    }
+  } catch (error) {
+    console.error("Error in GitHub OAuth flow:", error);
+    reply.status(500).send({
       success: false,
-      message: "GitHub authentication failed.",
+      message: "Internal Server Error during authentication.",
     });
   }
 });
