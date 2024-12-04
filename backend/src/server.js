@@ -80,18 +80,11 @@ httpsApp.register(loginController, { prefix: "/login" });
 
 // Endpoint to handle GitHub OAuth callback
 app.get("/auth/callback", async (req, reply) => {
-  const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(
-    req
-  );
-  console.log(token);
-  if (token) {
-    // return reply.send({
-    //     success: true,
-    //     token,
-    //     message: 'GitHub authentication successful!'
-    // });
-    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/${token}`);
+  const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
+  console.log(token); // Check the structure of the token object here
 
+  if (token && token.access_token) {
+    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/${token.access_token}`);
   } else {
     return reply.status(400).send({
       success: false,
@@ -100,20 +93,12 @@ app.get("/auth/callback", async (req, reply) => {
   }
 });
 
-
-// Endpoint to handle GitHub OAuth callback
 httpsApp.get("/auth/callback", async (req, reply) => {
-  const token = await httpsApp.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(
-    req
-  );
-  console.log(token);
-  if (token) {
-    // return reply.send({
-    //     success: true,
-    //     token,
-    //     message: 'GitHub authentication successful!'
-    // });
-    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/${token}`);
+  const token = await httpsApp.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
+  console.log(token); // Check the structure of the token object here
+
+  if (token && token.access_token) {
+    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/${token.access_token}`);
   } else {
     return reply.status(400).send({
       success: false,
