@@ -12,7 +12,7 @@ import {
   SidebarProvider,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { UserProfileMenu } from "@/components/UserProfileMenu";
 import { UserProjects } from "@/components/UserProjects";
 import { Header } from "./Header";
@@ -47,7 +47,7 @@ export default function Dashboard({ userId }) {
   //Delete this line and replace with actual user ID
 
   // API call to get user data
-  const getUserData = async () => {
+  const getUserData = useCallback(async () => {
     try {
       const response = await fetch(
         `https://backend.codegenner.net/db/userData/${userId}`
@@ -67,11 +67,11 @@ export default function Dashboard({ userId }) {
         description: "Please try again later",
       });
     }
-  };
+  }, [userId, toast]);
 
   useEffect(() => {
     getUserData();
-  }, []);
+  }, [getUserData]);
 
   const handleProjectCreated = (newProject) => {
     console.log("new project", newProject.data[0]);
