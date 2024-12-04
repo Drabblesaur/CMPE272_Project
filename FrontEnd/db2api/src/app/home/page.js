@@ -8,7 +8,7 @@ function Home() {
   console.log("Checkin");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams.get("userId");
   console.log(token);
   const pathToken =
     typeof window !== "undefined"

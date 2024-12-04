@@ -8,7 +8,7 @@ import projectController from "./prjcontroller.js";
 import oauthController from "./oauthcontroller.js";
 import mongoose from "mongoose";
 // import { User, validate } from "./models/user.js";
-// import UserData from "./models/userData.js";
+import UserData from "./models/userData.js";
 
 import loginController from "./logincontroller.js";
 
@@ -65,7 +65,6 @@ httpsApp.register(oauth2, {
   callbackUri: process.env.GITHUB_REDIRECT_URI,
 });
 
-
 // register ai controller
 app.register(aiController, { prefix: "/ai" });
 app.register(dbController, { prefix: "/db" });
@@ -82,14 +81,23 @@ httpsApp.register(loginController, { prefix: "/login" });
 app.get("/auth/callback", async (req, reply) => {
   console.log("Callback URI:", process.env.GITHUB_REDIRECT_URI);
   try {
-    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
+    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(
+      req
+    );
     console.log(token);
 
     if (token && token.token && token.token.access_token) {
-
       console.log("Access Token:", token.token.access_token);
-      console.log(`https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(token.token.access_token)}`)
-      reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(token.token.access_token)}`);
+      console.log(
+        `https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(
+          token.token.access_token
+        )}`
+      );
+      reply.redirect(
+        `https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(
+          token.token.access_token
+        )}`
+      );
       // reply.redirect("https://earnest-buttercream-edca31.netlify.app")
     } else {
       console.error("Failed to retrieve token:", token);
@@ -110,12 +118,41 @@ app.get("/auth/callback", async (req, reply) => {
 httpsApp.get("/auth/callback", async (req, reply) => {
   console.log("Callback URI:", process.env.GITHUB_REDIRECT_URI);
   try {
-    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
+    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(
+      req
+    );
     console.log(token);
 
-    if (token && token.token && token.token.access_token)  {
+    if (token && token.token && token.token.access_token) {
       console.log("Access Token:", token.token.access_token);
-        reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(token.token.access_token)}`);
+      // Fetch user data from GitHub
+      const user = await app.githubOAuth.getUserProfile(
+        token.token.access_token
+      );
+      console.log("User:", user);
+      // check if user exists in the database
+      const userData = await UserData.findOne({ githubId: user.id });
+      if (!userData) {
+        // Create a new user in the database
+        const newUser = new UserData({
+          githubId: user.id,
+          name: user.name,
+          email: user.email,
+          avatarUrl: user.avatar_url,
+        });
+        await newUser.save();
+        reply.redirect(
+          `https://earnest-buttercream-edca31.netlify.app/home?userId=${encodeURIComponent(
+            newUser._id
+          )}`
+        );
+      } else {
+        reply.redirect(
+          `https://earnest-buttercream-edca31.netlify.app/home?userId=${encodeURIComponent(
+            UserData._id
+          )}`
+        );
+      }
       //  reply.redirect("https://earnest-buttercream-edca31.netlify.app")
     } else {
       console.error("Failed to retrieve token:", token);
