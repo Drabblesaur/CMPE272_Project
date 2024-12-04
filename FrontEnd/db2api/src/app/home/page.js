@@ -9,29 +9,21 @@ export default function Home() {
   const { token } = router.query;
   const [userId, setUserId] = useState(null);
 
-  useEffect(() => {
-    // Handle token from URL query parameter
-    if (token) {
-      // Store the token in localStorage
-      localStorage.setItem("userID", token);
 
-      // Set the user ID to state
-      setUserId(token);
-
-      // Remove token from the URL
-      router.replace("/dashboard");
+useEffect(() => {
+  if (token) {
+    localStorage.setItem("userID", token);
+    setUserId(token);
+    router.replace("/dashboard");
+  } else {
+    const storedUserId = localStorage.getItem("userID");
+    if (!storedUserId) {
+      router.push("/auth");
     } else {
-      // Check localStorage for existing userID
-      const storedUserId = localStorage.getItem("userID");
-      if (!storedUserId) {
-        // Redirect to authentication page if no userID is found
-        router.push("/auth");
-      } else {
-        // Set the user ID from localStorage
-        setUserId(storedUserId);
-      }
+      setUserId(storedUserId);
     }
-  }, [token, router]);
+  }
+}, [token, router]);
 
   if (!userId) {
     return <p>Loading...</p>; // Show a loading state while processing
