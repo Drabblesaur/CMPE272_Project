@@ -112,7 +112,7 @@ function DataSetBuilder() {
         .map(col => `${col.title}(${col.type})`)
         .join(',');
   
-      const apiUrl = `http://127.0.0.1:8080/ai/generateCRUD?schema=${schema}&language=${selectedLanguage}&database=${selectedDBSchema}`;
+      const apiUrl = `https://backend.codegenner.net/ai/generateCRUD?schema=${schema}&language=${selectedLanguage}&database=${selectedDBSchema}`;
   
       const response = await fetch(apiUrl, {
         method: 'GET',

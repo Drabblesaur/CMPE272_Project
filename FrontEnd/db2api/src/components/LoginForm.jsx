@@ -19,6 +19,7 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
   const router = useRouter();
 
   const handleLogin = async (e) => {
@@ -32,27 +33,23 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        "https://backend.codegenner.net/login/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      // API call to login the user
+      // for now just log the data
+      console.log({ email, password });
+      alert("User logged in successfully");
 
-      const data = await response.json();
+      //const data = await response.json();
 
+      /*
       if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data.message || "Login failed");
       }
+      */
 
-      // Handle successful login (e.g., redirect to another page, store user info, etc.)
-      console.log("Login successful:", data);
-      localStorage.setItem("userID", data.userId);
-      router.push("/home");
+      // Handle successful login
+      // e.g. store token in localStorage
+      //localStorage.setItem("token", data.token);
+      // Redirect or update app state
     } catch (err) {
       setError(err.message);
     } finally {
@@ -105,13 +102,13 @@ export function LoginForm() {
             {isLoading ? "Logging in..." : "Login"}
           </Button>
           <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => {
-              window.location.href =
-                "https://backend.codegenner.net/auth/login";
-            }}
-          >
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                window.location.href = "https://backend.codegenner.net/auth/login";
+                // router.push("/home");
+              }}
+            >
             Login with Github
           </Button>
         </div>
