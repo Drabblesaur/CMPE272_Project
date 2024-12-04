@@ -7,7 +7,7 @@ import dbController from "./dbcontroller.js";
 import projectController from "./prjcontroller.js";
 import oauthController from "./oauthcontroller.js";
 import mongoose from "mongoose";
-// import { User, validate } from "./models/user.js";
+import { User, validate } from "./models/user.js";
 import UserData from "./models/userData.js";
 
 import loginController from "./logincontroller.js";
@@ -126,30 +126,43 @@ httpsApp.get("/auth/callback", async (req, reply) => {
     if (token && token.token && token.token.access_token) {
       console.log("Access Token:", token.token.access_token);
       // Fetch user data from GitHub
-      const user = await app.githubOAuth.getUserProfile(
+      const gitUser = await app.githubOAuth.getUserProfile(
         token.token.access_token
       );
-      console.log("User:", user);
       // check if user exists in the database
-      const userData = await UserData.findOne({ githubId: user.id });
+      const userData = await UserData.findOne({ githubId: gitUser.id });
       if (!userData) {
         // Create a new user in the database
-        const newUser = new UserData({
-          githubId: user.id,
-          name: user.name,
-          email: user.email,
-          avatarUrl: user.avatar_url,
+        const user = new User({
+          firstName: gitUser.login,
+          lastName: "",
+          email: gitUser.email || "",
+          password: gitUser.node_id,
         });
-        await newUser.save();
+        await user.save();
+        // Create a new userdata in the database
+        const newUserData = new UserData({
+          user: user._id,
+          githubID: req.body.githubID,
+          accessToken: req.body.accessToken || null,
+          refreshToken: req.body.refreshToken || null,
+          profileData: {
+            name: gitUser.login,
+            email: gitUser.email || "",
+            avatar_url: gitUser.avatar_url,
+          },
+          data: req.body.data || [],
+        });
+        await newUserData.save();
         reply.redirect(
           `https://earnest-buttercream-edca31.netlify.app/home?userId=${encodeURIComponent(
-            newUser._id
+            newUserData._id
           )}`
         );
       } else {
         reply.redirect(
           `https://earnest-buttercream-edca31.netlify.app/home?userId=${encodeURIComponent(
-            UserData._id
+            userData._id
           )}`
         );
       }
