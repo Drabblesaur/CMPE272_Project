@@ -78,6 +78,48 @@ httpsApp.register(projectController, { prefix: "/prj" });
 httpsApp.register(loginController, { prefix: "/login" });
 httpsApp.register(oauthController, { prefix: "/auth" })
 
+// Endpoint to handle GitHub OAuth callback
+app.get("/auth/callback", async (req, reply) => {
+  const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(
+    req
+  );
+  console.log(token);
+  if (token) {
+    // return reply.send({
+    //     success: true,
+    //     token,
+    //     message: 'GitHub authentication successful!'
+    // });
+    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/token=${token}`);
+  } else {
+    return reply.status(400).send({
+      success: false,
+      message: "GitHub authentication failed.",
+    });
+  }
+});
+
+
+// Endpoint to handle GitHub OAuth callback
+httpsApp.get("/auth/callback", async (req, reply) => {
+  const token = await httpsApp.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(
+    req
+  );
+  console.log(token);
+  if (token) {
+    // return reply.send({
+    //     success: true,
+    //     token,
+    //     message: 'GitHub authentication successful!'
+    // });
+    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/token=${token}`);
+  } else {
+    return reply.status(400).send({
+      success: false,
+      message: "GitHub authentication failed.",
+    });
+  }
+});
 
 const start = async () => {
   try {
