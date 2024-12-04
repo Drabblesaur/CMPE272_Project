@@ -14,7 +14,7 @@ export default function Home() {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    if (!router.isReady) return; // Ensure the router is ready
+    // if (!router.isReady) return; // Ensure the router is ready
 console.log(token)
     if (token) {
       console.log("1");
