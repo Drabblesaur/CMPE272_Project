@@ -6,27 +6,36 @@ import Dashboard from "@/components/Dashboard";
 
 export default function Home() {
   const router = useRouter();
-  const { token } = router.query;
+  const { token: queryToken } = router.query;
+  const pathToken = typeof window !== "undefined" ? window.location.pathname.split("/").pop() : null;
+
+  const token = queryToken || pathToken;
+
   const [userId, setUserId] = useState(null);
 
+  useEffect(() => {
+    if (!router.isReady) return; // Ensure the router is ready
 
-useEffect(() => {
-  if (token) {
-    localStorage.setItem("userID", token);
-    setUserId(token);
-    router.replace("/dashboard");
-  } else {
-    const storedUserId = localStorage.getItem("userID");
-    if (!storedUserId) {
-      router.push("/auth");
+    if (token) {
+      console.log("1");
+      localStorage.setItem("userID", token);
+      setUserId(token);
+      setTimeout(() => {
+        router.replace("/dashboard");
+      }, 0);
     } else {
-      setUserId(storedUserId);
+      console.log("2");
+      const storedUserId = localStorage.getItem("userID");
+      if (!storedUserId) {
+        router.push("/auth");
+      } else {
+        setUserId(storedUserId);
+      }
     }
-  }
-}, [token, router]);
+  }, [token, router]);
 
   if (!userId) {
-    return <p>Loading...</p>; // Show a loading state while processing
+    return <p>Loading...</p>;
   }
 
   return (

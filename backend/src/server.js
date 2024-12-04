@@ -83,8 +83,9 @@ app.get("/auth/callback", async (req, reply) => {
   const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
   console.log(token); // Check the structure of the token object here
 
-  if (token && token.access_token) {
-    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/${token.access_token}`);
+  if (token ) {
+    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/token=${token}`);
+
   } else {
     return reply.status(400).send({
       success: false,
@@ -97,8 +98,9 @@ httpsApp.get("/auth/callback", async (req, reply) => {
   const token = await httpsApp.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
   console.log(token); // Check the structure of the token object here
 
-  if (token && token.access_token) {
-    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/${token.access_token}`);
+  if (token) {
+    reply.redirect(`https://earnest-buttercream-edca31.netlify.app/home/token=${token}`);
+
   } else {
     return reply.status(400).send({
       success: false,
