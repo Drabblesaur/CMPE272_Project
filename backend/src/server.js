@@ -83,7 +83,9 @@ app.get("/auth/callback", async (req, reply) => {
 
   try {
     // Step 1: Get the access token from GitHub
-    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
+    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(
+      req
+    );
     console.log(token);
 
     // Step 2: Check if token is valid
@@ -97,37 +99,46 @@ app.get("/auth/callback", async (req, reply) => {
         },
       });
 
-      const user = response.data; // Extract user data
-      console.log("User:", user);
+      const gitUser = response.data; // Extract user data
+      console.log("User:", gitUser);
 
       // Step 4: Check if the user already exists in the database
-      const userData = await UserData.findOne({ githubId: user.id });
+      const userData = await UserData.findOne({ githubID: gitUser.id });
 
       if (!userData) {
-        // Step 5: If user doesn't exist, create a new user
-        const newUser = new UserData({
-          user: user.id, // Corrected to use user.id
-          githubID: user.url,
-          accessToken: token.token.access_token,
-          refreshToken: token.token.refresh_token, // Corrected refresh token
-          profileData: {
-            name: user.name,
-            email: req.email || "john.doe@example.com", // Default email if not provided
-            avatar_url: user.avatar_url || "https://example.com/avatar.jpg", // Dynamically use avatar URL from GitHub
-          },
-          data:  [], // Default data if not provided
+        // Create a new user in the database
+        const user = new User({
+          firstName: gitUser.login,
+          lastName: "GitHub",
+          email: gitUser.email || "",
+          password: gitUser.node_id,
         });
-
-        await newUser.save();
-
-        // Step 6: Redirect to home page with new user data
+        await user.save();
+        // Create a new userdata in the database
+        const newUserData = new UserData({
+          user: user._id,
+          githubID: gitUser.id,
+          accessToken: null,
+          refreshToken: null,
+          profileData: {
+            name: gitUser.login,
+            email: gitUser.email,
+            avatar_url: gitUser.avatar_url,
+          },
+          data: [],
+        });
+        await newUserData.save();
         reply.redirect(
-          `http://localhost:3000/home?userId=${encodeURIComponent(newUser._id)}`
+          `https://earnest-buttercream-edca31.netlify.app/home?userId=${encodeURIComponent(
+            newUserData._id
+          )}`
         );
       } else {
-        // Step 7: If user exists, redirect to home page with existing user data
+        console.log("User already exists:", userData);
         reply.redirect(
-          `http://localhost:3000/home?userId=${encodeURIComponent(userData._id)}`
+          `https://earnest-buttercream-edca31.netlify.app/home?userId=${encodeURIComponent(
+            userData._id
+          )}`
         );
       }
     } else {
@@ -147,7 +158,6 @@ app.get("/auth/callback", async (req, reply) => {
     });
   }
 });
-
 
 httpsApp.get("/auth/callback", async (req, reply) => {
   console.log("Callback URI:", process.env.GITHUB_REDIRECT_URI);

@@ -21,7 +21,6 @@ export function LoginForm() {
   const [error, setError] = useState(null);
 
   const router = useRouter();
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
@@ -33,23 +32,27 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      // API call to login the user
-      // for now just log the data
-      console.log({ email, password });
-      alert("User logged in successfully");
+      const response = await fetch(
+        "https://backend.codegenner.net/login/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
-      //const data = await response.json();
+      const data = await response.json();
 
-      /*
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error(data.message || "Something went wrong");
       }
-      */
 
-      // Handle successful login
-      // e.g. store token in localStorage
-      //localStorage.setItem("token", data.token);
-      // Redirect or update app state
+      // Handle successful login (e.g., redirect to another page, store user info, etc.)
+      console.log("Login successful:", data);
+      localStorage.setItem("userID", data.userId);
+      router.push("/home");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -102,13 +105,13 @@ export function LoginForm() {
             {isLoading ? "Logging in..." : "Login"}
           </Button>
           <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                window.location.href = "http://localhost:8080/auth/login";
-                // router.push("/home");
-              }}
-            >
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              window.location.href = "http://localhost:8080/auth/login";
+              // router.push("/home");
+            }}
+          >
             Login with Github
           </Button>
         </div>

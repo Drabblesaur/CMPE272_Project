@@ -49,8 +49,9 @@ export default function Dashboard({ userId }) {
   // API call to get user data
   const getUserData = useCallback(async () => {
     try {
+      const storedUserId = localStorage.getItem("userID");
       const response = await fetch(
-        `https://backend.codegenner.net/db/userData/${userId}`
+        `https://backend.codegenner.net/db/userData/${storedUserId}`
       );
       const data = await response.json();
       console.log(data);
