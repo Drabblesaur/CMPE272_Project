@@ -20,6 +20,9 @@ Enterprise use: Enables rapid development and deployment of database-driven appl
 Persona #1: Full-Stack Developer at a SaaS Startup
 A full-stack developer frequently builds APIs to interact with databases, and need a faster solution to keep up with the startup’s pace. Using the low-code interface, they can set up API endpoints in minutes and defins custom routes based on feature requests. The AI recommendations suggest how to optimize these routes for common performance bottlenecks based on similar use cases.
 
+Persona #2: Lone Frontend Developer
+Complex websites are hard to develop with just a lone frontend developer. Using the site, they can quickly spinup API for their backend.
+
 # Technologies Used
 
 Below are the technologies used in this project.
