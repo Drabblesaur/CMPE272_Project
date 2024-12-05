@@ -1,4 +1,5 @@
 # Db2API (CMPE 272 Project)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/decd005f-c984-4615-a242-ccd4730fc1ab/deploy-status)](https://app.netlify.com/sites/earnest-buttercream-edca31/deploys)
 
 # Description
 
