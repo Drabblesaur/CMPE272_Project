@@ -14,6 +14,7 @@
   "dependencies": {
     "@fastify/cors": "^10.0.1",
     "@fastify/oauth2": "^8.1.0",
+    "axios": "^1.7.9",
     "backend": "file:",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

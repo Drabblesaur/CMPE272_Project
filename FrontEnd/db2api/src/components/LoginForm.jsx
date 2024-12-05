@@ -105,7 +105,7 @@ export function LoginForm() {
               variant="outline"
               className="w-full"
               onClick={() => {
-                window.location.href = "https://backend.codegenner.net/auth/login";
+                window.location.href = "http://localhost:8080/auth/login";
                 // router.push("/home");
               }}
             >

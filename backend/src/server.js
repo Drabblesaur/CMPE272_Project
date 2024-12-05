@@ -9,7 +9,7 @@ import oauthController from "./oauthcontroller.js";
 import mongoose from "mongoose";
 import { User, validate } from "./models/user.js";
 import UserData from "./models/userData.js";
-
+import axios from "axios";
 import loginController from "./logincontroller.js";
 
 dotenv.config();
@@ -80,26 +80,58 @@ httpsApp.register(loginController, { prefix: "/login" });
 // Endpoint to handle GitHub OAuth callback
 app.get("/auth/callback", async (req, reply) => {
   console.log("Callback URI:", process.env.GITHUB_REDIRECT_URI);
+
   try {
-    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(
-      req
-    );
+    // Step 1: Get the access token from GitHub
+    const token = await app.githubOAuth.getAccessTokenFromAuthorizationCodeFlow(req);
     console.log(token);
 
+    // Step 2: Check if token is valid
     if (token && token.token && token.token.access_token) {
       console.log("Access Token:", token.token.access_token);
-      console.log(
-        `https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(
-          token.token.access_token
-        )}`
-      );
-      reply.redirect(
-        `https://earnest-buttercream-edca31.netlify.app/home?token=${encodeURIComponent(
-          token.token.access_token
-        )}`
-      );
-      // reply.redirect("https://earnest-buttercream-edca31.netlify.app")
+
+      // Step 3: Fetch the user profile from GitHub
+      const response = await axios.get("https://api.github.com/user", {
+        headers: {
+          Authorization: `Bearer ${token.token.access_token}`, // Corrected string interpolation
+        },
+      });
+
+      const user = response.data; // Extract user data
+      console.log("User:", user);
+
+      // Step 4: Check if the user already exists in the database
+      const userData = await UserData.findOne({ githubId: user.id });
+
+      if (!userData) {
+        // Step 5: If user doesn't exist, create a new user
+        const newUser = new UserData({
+          user: user.id, // Corrected to use user.id
+          githubID: user.url,
+          accessToken: token.token.access_token,
+          refreshToken: token.token.refresh_token, // Corrected refresh token
+          profileData: {
+            name: user.name,
+            email: req.email || "john.doe@example.com", // Default email if not provided
+            avatar_url: user.avatar_url || "https://example.com/avatar.jpg", // Dynamically use avatar URL from GitHub
+          },
+          data:  [], // Default data if not provided
+        });
+
+        await newUser.save();
+
+        // Step 6: Redirect to home page with new user data
+        reply.redirect(
+          `http://localhost:3000/home?userId=${encodeURIComponent(newUser._id)}`
+        );
+      } else {
+        // Step 7: If user exists, redirect to home page with existing user data
+        reply.redirect(
+          `http://localhost:3000/home?userId=${encodeURIComponent(userData._id)}`
+        );
+      }
     } else {
+      // Token retrieval failed
       console.error("Failed to retrieve token:", token);
       reply.status(400).send({
         success: false,
@@ -107,6 +139,7 @@ app.get("/auth/callback", async (req, reply) => {
       });
     }
   } catch (error) {
+    // Catch any errors that occur during the OAuth process
     console.error("Error in GitHub OAuth flow:", error);
     reply.status(500).send({
       success: false,
@@ -114,6 +147,7 @@ app.get("/auth/callback", async (req, reply) => {
     });
   }
 });
+
 
 httpsApp.get("/auth/callback", async (req, reply) => {
   console.log("Callback URI:", process.env.GITHUB_REDIRECT_URI);
