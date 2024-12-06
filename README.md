@@ -1,6 +1,8 @@
 # Db2API (CMPE 272 Project)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/decd005f-c984-4615-a242-ccd4730fc1ab/deploy-status)](https://app.netlify.com/sites/earnest-buttercream-edca31/deploys)
 
+# Deployment
+https://earnest-buttercream-edca31.netlify.app/
 # Description
 
 This project is a service that generates API CRUD ( Create, Read, Update, Delete) and Custom APIs to interact with a user’s existing Database. All the user needs to do is specify the Database and its schemas, the code framework, and if the user wants a Custom API route, the description of what the route does.
